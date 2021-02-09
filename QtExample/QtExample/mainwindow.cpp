@@ -7,7 +7,7 @@ MainWindow::MainWindow(std::unique_ptr<QWidget> parent) :
 	ui(new Ui::MainWindowClass)
 {
 	ui->setupUi(this);
-	
+
 }
 
 MainWindow::~MainWindow()
