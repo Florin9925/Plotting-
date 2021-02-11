@@ -92,6 +92,9 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="text">
+     <string>1</string>
+    </property>
    </widget>
    <widget class="QLabel" name="labelN">
     <property name="geometry">
@@ -245,6 +248,9 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="text">
+     <string>0</string>
+    </property>
    </widget>
    <widget class="QLineEdit" name="lineEditB">
     <property name="geometry">
@@ -254,6 +260,9 @@
       <width>71</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="text">
+     <string>0</string>
     </property>
    </widget>
    <widget class="QLabel" name="labelB">
@@ -283,6 +292,9 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="text">
+     <string>0</string>
+    </property>
    </widget>
    <widget class="QLabel" name="labelML">
     <property name="geometry">
@@ -310,6 +322,9 @@
       <width>71</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="text">
+     <string>1</string>
     </property>
    </widget>
    <widget class="QLabel" name="labelDN">
@@ -357,6 +372,9 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="text">
+     <string>0</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -365,7 +383,7 @@
      <x>0</x>
      <y>0</y>
      <width>1200</width>
-     <height>27</height>
+     <height>34</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuExit">
@@ -390,8 +408,6 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="mainwindow.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
