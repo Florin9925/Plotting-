@@ -15,9 +15,10 @@ MainWindow::MainWindow(std::unique_ptr<QWidget> parent) :
     connect(ui->pushButtonStep1, &QPushButton::released, this, &MainWindow::SelectButtonStep1);
 
 }
-std::string replaceConstant(const QString& input,const std::string& token,const std::string& token_value)
+
+std::string MainWindow::replaceConstant(const std::string& input,const std::string& token,const std::string& token_value)
 {
-    std::string ecuation = input.toStdString();
+    std::string ecuation = input;
     while (ecuation.find(token) != std::string::npos)
     {
         ecuation.replace(ecuation.find(token), token.size(), token_value);
@@ -31,7 +32,7 @@ double MainWindow::calculateExpression(CMathParser& mathParser,const std::string
 {
     double result;
 
-    if (mathParser.Calculate(line.c_str(), &result) != CMathParser::ResultOk)
+    if (mathParser.Calculate(line.c_str(), &result) == CMathParser::ResultOk)
     {
         return result;
     }
@@ -39,37 +40,48 @@ double MainWindow::calculateExpression(CMathParser& mathParser,const std::string
     return NAN;
 }
 
-double&& MainWindow::generateKthTerm(CMathParser& mathParser,const QString& line, uint8_t k)
+double MainWindow::generateKthTerm(CMathParser& mathParser,const QString& line, uint8_t k)
 {
-   std::string ecuation((replaceConstant(line,"n",std::move(std::to_string(k)))));
+   std::string ecuation((replaceConstant(line.toStdString(),"n",std::move(std::to_string(k)))));
 
    return calculateExpression(mathParser, ecuation);
 
 }
 
-double MainWindow::generateFComp(CMathParser& mathParser,const QString& line, uint8_t k)
+double MainWindow::generateFComp(CMathParser& mathParser,const QString& lineToEdit,const QString& seriesLine, uint8_t k, double x, double y)
 {
-    double comp_k = generateKthTerm(mathParser, line, k);
-    double comp_k1 = generateKthTerm(mathParser, line, k -1);//Xn-1
+    double comp_k = generateKthTerm(mathParser, seriesLine, k);
+    double comp_k1 = generateKthTerm(mathParser, seriesLine, k -1);//Xn-1
 
 
-    std::string ecuationX((replaceConstant(line,"XN",std::move(std::to_string(k)))));
-    ecuationX((replaceConstant(line,"XN-1",std::move(std::to_string(k)))));
-    ecuationX((replaceConstant(line,"YN",std::move(std::to_string(k)))));
-    ecuationX((replaceConstant(line,"YN-1",std::move(std::to_string(k)))));
-    ecuationX((replaceConstant(line,"n",std::move(std::to_string(k)))));
-    ecuationX((replaceConstant(line,"n",std::move(std::to_string(k)))));
-    ecuationX((replaceConstant(line,"n",std::move(std::to_string(k)))));
+    std::string ecuationComp;
+    ecuationComp = replaceConstant(lineToEdit.toStdString(),"(XN)",std::move(std::to_string(comp_k)));
+    ecuationComp = replaceConstant(ecuationComp,"(XN-1)",std::move(std::to_string(comp_k1)));
+    ecuationComp = replaceConstant(ecuationComp,"(DN)",ui->lineEditDN->text().toStdString());
+    ecuationComp = replaceConstant(ecuationComp,"X",std::move(std::to_string(x)));
+    ecuationComp = replaceConstant(ecuationComp,"Y",std::move(std::to_string(y)));
+
+    ui->lineEditMU->setText(QString::fromStdString(ecuationComp));
+
+    double result = calculateExpression(mathParser, ecuationComp);
+
+    ui->lineEditDN->setText(QString::number(result));
+
+    return calculateExpression(mathParser, ecuationComp);
 
 }
 
 
-QPoint&& MainWindow::generateFk(CMathParser& mathParser, uint8_t k)
+QVector2D MainWindow::generateFk(CMathParser& mathParser, uint8_t k, double x, double y)
 {
-    std::string ecuationX((replaceConstant(line,"n",std::move(std::to_string(k)))));
+    QVector2D resultPoint;
+
+    resultPoint.setX(generateFComp(mathParser, ui->lineEditFx->text(),ui->lineEditXn->text(), k, x, y));
+
+    resultPoint.setY(generateFComp(mathParser, ui->lineEditFy->text(),ui->lineEditXn->text(), k, x, y));
 
 
-    std::string ecuationY((replaceConstant(line,"n",std::move(std::to_string(k)))));
+    return resultPoint;
 }
 
 
@@ -86,11 +98,17 @@ void MainWindow::generate2DPoints(CMathParser& mathParser,uint8_t n,std::vector<
     double x0 = disDouble(gen);
     double y0 = disDouble(gen);
 
-    std::array<double, 101> XN;
-    std::array<double, 101> YN;
 
-    std::array<bool, 101> generated;
-    generated.fill(false);
+    ui->lineEditA->setText(QString::number(x0));
+
+    ui->lineEditB->setText(QString::number(y0));
+
+    ui->lineEditML->setText(QString::number(k));
+    //std::array<double, 101> XN;
+    //std::array<double, 101> YN;
+
+    //std::array<bool, 101> generated;
+    //generated.fill(false);
 
     //double x_n;
     //double x_n1;//Xn-1
@@ -98,20 +116,10 @@ void MainWindow::generate2DPoints(CMathParser& mathParser,uint8_t n,std::vector<
     //double y_n;
     //double y_n1;//Yn-1
 
-    if(generated[k] == false)
-    {
-        generated[k] = true;
-        XN[k] = std::move(generateKthTerm(mathParser, ui->lineEditXn->text(), k));
-        YN[k] = std::move(generateKthTerm(mathParser, ui->lineEditYn->text(), k));
-    }
-    if(generated[k-1] == false)
-    {
-        generated[k-1] = true;
-        XN[k-1] = std::move(generateKthTerm(mathParser, ui->lineEditXn->text(), k-1));
-        YN[k-1] = std::move(generateKthTerm(mathParser, ui->lineEditYn->text(), k-1));
-    }
+    double result = generateFComp(mathParser, ui->lineEditFx->text(), ui->lineEditXn->text(), k, x0, y0);//generateKthTerm(mathParser, ui->lineEditXn->text(), k);
+    //ui->lineEditMU->setText(QString::number(result));
 
-     vector.emplace_back(QVector2D(std::move(disDouble(gen)),std::move(disDouble(gen))));
+    //vector.emplace_back(QVector2D(generateFk(mathParser,k,x0,y0)));
 
 }
 
@@ -125,7 +133,8 @@ bool MainWindow::CheckConstraintN()
 
 void MainWindow::SelectButtonStep1()
 {
-    //TO DO:calculate ecuation function
+
+    /*
     QString lineA = ui->lineEditA->text();
 
     CMathParser parser;
@@ -145,19 +154,24 @@ void MainWindow::SelectButtonStep1()
     {
         printf("Error in Formula: [%s].\n", parser.LastError()->Text);
     }
+    */
 
 
     //TO DO: initialize generate vector function
     std::vector<QVector2D> points;
-    generate2DPoints(static_cast<uint8_t>(ui->lineEditN->text().toUShort()), points);
+    CMathParser parser;
+
+    generate2DPoints(parser,static_cast<uint8_t>(ui->lineEditN->text().toUShort()), points);
 
 
-    //
-    QMessageBox qm;
+    //QMessageBox qm;
 
-    qm.setText(QString::number(points[0].x()));
+    //QString result;
+    //result = QString::number(points[0].x()) + QString::number(points[0].y());
 
-    qm.exec();
+    //qm.setText(result);
+
+    //qm.exec();
 }
 
 MainWindow::~MainWindow()

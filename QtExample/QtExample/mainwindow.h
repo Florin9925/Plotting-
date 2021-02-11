@@ -24,11 +24,11 @@ private slots:
     void SelectButtonStep1();
 
 private:
-    std::string replaceConstant(const QString& input,const std::string& token,const std::string& token_value);
+    std::string replaceConstant(const std::string& input,const std::string& token,const std::string& token_value);
     double calculateExpression(CMathParser& mathParser,const std::string& line);
-    double&& generateKthTerm(CMathParser& mathParser,const QString& line, uint8_t k);
-    double generateFComp(CMathParser& mathParser,const QString& line, uint8_t k);
-    QPoint&& generateFk(CMathParser& mathParser,uint8_t k);
+    double generateKthTerm(CMathParser& mathParser,const QString& line, uint8_t k);
+    double generateFComp(CMathParser& mathParser,const QString& lineToEdit,const QString& seriesLine, uint8_t k, double x, double y);
+    QVector2D generateFk(CMathParser& mathParser,uint8_t k, double x, double y);
     void generate2DPoints(CMathParser& mathParser,uint8_t n,std::vector<QVector2D>& vector);
     bool CheckConstraintN();
 
