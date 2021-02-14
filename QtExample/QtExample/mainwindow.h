@@ -11,6 +11,10 @@
 #include <cstdlib>
 #include <random>
 #include <array>
+#include <fstream>
+#include <thread>
+#include <regex>
+#include <sstream>
 
 class MainWindow : public QMainWindow
 {
@@ -22,9 +26,9 @@ public:
 
 private slots:
     void SelectButtonStep1();
+    void AddPointsButton();
 
 private:
-    //Convertor CONVERTOR = Convertor(-5, 5, -5, 5, ui->potWidget->width(), ui->potWidget->width());
 
     std::string replaceConstant(const std::string& input,const std::string& token,const std::string& token_value);
     double calculateExpression(CMathParser& mathParser,const std::string& line);
@@ -32,7 +36,7 @@ private:
     double generateFComp(CMathParser& mathParser,const QString& lineToEdit,const QString& seriesLine, uint8_t k, double x, double y);
     QCPGraphData generateFk(CMathParser& mathParser,uint8_t k, double x, double y);
     QCPGraphData generate2DPoints(CMathParser& mathParser);
-    void plotting(CMathParser& mathParser, uint8_t n);
+    void plotting(int n);
     bool CheckConstraintN();
 
 private:

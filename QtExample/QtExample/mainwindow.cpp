@@ -8,11 +8,15 @@ MainWindow::MainWindow(std::unique_ptr<QWidget> parent) :
     ui->setupUi(this);
 
     //TO DO:make function
-    QRegExp rx("0|(^[1-9][0-9]?$|^100$)");
-    QValidator *validator = new QRegExpValidator(rx, this);
-    ui->lineEditN->setValidator(validator);
+    ui->lineEditN->setValidator(new QRegExpValidator(QRegExp("0|(^[1-9][0-9]?$|^100$)"), this));
+    ui->lineEditAddPoints->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
+    ui->lineEditA->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
+    ui->lineEditB->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
+    ui->lineEditML->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
+    ui->lineEditMU->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
 
     connect(ui->pushButtonStep1, &QPushButton::released, this, &MainWindow::SelectButtonStep1);
+    connect(ui->pushButtonAddPoints, &QPushButton::released, this, &MainWindow::AddPointsButton);
     //connect(ui->pushButtonStep2, &QPushButton::released, this, &MainWindow::SelectButtonStep2);
 
 }
@@ -97,77 +101,55 @@ QCPGraphData MainWindow::generate2DPoints(CMathParser& mathParser)
 
     double x0 = disDouble(gen);
     double y0 = disDouble(gen);
-
-    //ui->lineEditX0->setText(QString::number(x0));
-
-    //ui->lineEditY0->setText(QString::number(y0));
-
-    //ui->lineEditK->setText(QString::number(k));
-
-    //std::array<double, 101> XN;
-    //std::array<double, 101> YN;
-    //std::array<bool, 101> generated;
-    //generated.fill(false);
-
-    //double x_n;
-    //double x_n1;//Xn-1
-
-    //double y_n;
-    //double y_n1;//Yn-1
-
     result = generateFk(mathParser, k, x0, y0);
-
-    //ui->lineEditXnPrint->setText(QString::number(result.key));
-    //ui->lineEditYnPrint->setText(QString::number(result.value));
 
     return result;
 }
 
-void MainWindow::plotting(CMathParser& mathParser,uint8_t n)
+void MainWindow::plotting(int n)
 {
 
     ui->potWidget->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom)); // period as decimal separator and comma as thousand separator
     ui->potWidget->legend->setVisible(true);
+
     QFont legendFont = font();  // start out with MainWindow's font..
     legendFont.setPointSize(9); // and make a bit smaller for legend
     ui->potWidget->legend->setFont(legendFont);
     ui->potWidget->legend->setBrush(QBrush(QColor(255,255,255,230)));
-    // by default, the legend is in the inset layout of the main axis rect. So this is how we access it to change legend placement:
-    //ui->potWidget->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignBottom|Qt::AlignRight);
 
-    // setup for graph 4: key axis right, value axis top
-    // will contain parabolically distributed data points with some random perturbance
     //ui->potWidget->addGraph(ui->potWidget->yAxis2, ui->potWidget->xAxis2);
     ui->potWidget->graph(0)->setPen(QColor(50, 50, 50, 255));
     ui->potWidget->graph(0)->setLineStyle(QCPGraph::lsNone);
-    //ui->potWidget->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 4));
-    //ui->potWidget->graph(0)->setName("Some random data around\na quadratic function");
 
     // generate data, just playing with numbers, not much to learn here:
-    QVector<double> x4(10000), y4(10000);
+    QVector<double> x4, y4;
 
-    //float Sx=0.5;
-    //float Sy=2.0;
 
-    QString Xs("");
-    QString Ys("");
-    for (int i=0; i<10000; ++i) // data for graphs 2, 3 and 4
+    auto readFile=[&](int start,std::string fileName)
     {
-      QCPGraphData temp = generate2DPoints(mathParser);
+        for (std::ifstream in(fileName); !in.eof();)
+            {
+                std::string line;
+                std::getline(in, line);
+                if (std::regex_match(line, std::regex(R"(\d*.\d* \d*.\d*)"))) {
+                    std::stringstream ss(line);
+                    std::string item;
 
-      x4[i] = temp.key;//CONVERTOR.LatitudeToPx(temp.key);
-      y4[i] = temp.value;//CONVERTOR.LongitudeToPx(temp.value);
+                    std::getline(ss, item, ' ');
+                    x4.push_back( std::move(std::stod(item)));
+                    std::getline(ss, item, ' ');
+                    y4.push_back(std::move(std::stod(item)));
+                    ++start;
+                }
+            }
+    };
 
-      Xs += QString::number(x4[i]) + " ";
-      Ys += QString::number(y4[i]) + " ";
+    readFile(0, "D:\\Info Unitbv 2020-2021\\Semestrul I\\Modern C++\\QtApplication\\QtExample\\QtExample\\Step1\\file1.txt");
+    readFile(n/4, "D:\\Info Unitbv 2020-2021\\Semestrul I\\Modern C++\\QtApplication\\QtExample\\QtExample\\Step1\\file2.txt");
+    readFile(n*2/4, "D:\\Info Unitbv 2020-2021\\Semestrul I\\Modern C++\\QtApplication\\QtExample\\QtExample\\Step1\\file3.txt");
+    readFile(n*3/4, "D:\\Info Unitbv 2020-2021\\Semestrul I\\Modern C++\\QtApplication\\QtExample\\QtExample\\Step1\\file4.txt");
 
-      ui->potWidget->replot();
-    }
-    ui->lineEditX0->setText(Xs);
-    ui->lineEditY0->setText(Ys);
 
-    //ui->potWidget->graph(0)->antialiased();
-    //ui->potWidget->graph(0)->rescaleAxes(true);
     // pass data points to graphs:
     ui->potWidget->graph(0)->setData(y4, x4);
     // activate top and right axes, which are invisible by default:
@@ -178,22 +160,11 @@ void MainWindow::plotting(CMathParser& mathParser,uint8_t n)
     ui->potWidget->xAxis2->setRange(-0.5, 1.5);
     ui->potWidget->yAxis->setRange(-0.5, 1.5);
     ui->potWidget->yAxis2->setRange(-0.5, 1.5);
-    // set pi ticks on top axis:
-    //ui->potWidget->xAxis2->setTicker(QSharedPointer<QCPAxisTickerPi>(new QCPAxisTickerPi));
-    // add title layout element:
-    //ui->potWidget->plotLayout()->insertRow(0);
-    //ui->potWidget->plotLayout()->addElement(0, 0, new QCPTextElement(ui->potWidget, "Way too many graphs in one plot", QFont("sans", 12, QFont::Bold)));
     // set labels:
     ui->potWidget->xAxis->setLabel("Bottom axis with outward ticks");
     ui->potWidget->yAxis->setLabel("Left axis label");
     ui->potWidget->xAxis2->setLabel("Top axis label");
     ui->potWidget->yAxis2->setLabel("Right axis label");
-    // make ticks on bottom axis go outward:
-   // ui->potWidget->xAxis->setTickLength(0, 5);
-   // ui->potWidget->xAxis->setSubTickLength(0, 3);
-    // make ticks on right axis go inward and outward:
-   // ui->potWidget->yAxis2->setTickLength(3, 3);
-   // ui->potWidget->yAxis2->setSubTickLength(1, 1);
 
     ui->potWidget->replot();
 
@@ -201,49 +172,60 @@ void MainWindow::plotting(CMathParser& mathParser,uint8_t n)
 
 void MainWindow::SelectButtonStep1()
 {
-
+    int n = 10000;
     CMathParser parser;
     ui->potWidget->addGraph(ui->potWidget->yAxis2, ui->potWidget->xAxis2);
     ui->potWidget->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
-    plotting(parser, ui->lineEditN->text().toUInt());
+
+    auto generate =[&](int start, int stop, std::string fileName){
+        std::ofstream out(fileName);
+        for (int i=start; i < stop; ++i) // data for graphs 2, 3 and 4
+            {
+                QCPGraphData temp = generate2DPoints(parser);
+                out<< temp.key<<" "<< temp.value<<"\n";
+            }
+    out.close();
+    };
+    std::thread t1{generate, 0, n/4, "D:\\Info Unitbv 2020-2021\\Semestrul I\\Modern C++\\QtApplication\\QtExample\\QtExample\\Step1\\file1.txt"};
+    std::thread t2{generate, n/4, n*2/4, "D:\\Info Unitbv 2020-2021\\Semestrul I\\Modern C++\\QtApplication\\QtExample\\QtExample\\Step1\\file2.txt"};
+    std::thread t3{generate, n*2/4, n*3/4, "D:\\Info Unitbv 2020-2021\\Semestrul I\\Modern C++\\QtApplication\\QtExample\\QtExample\\Step1\\file3.txt"};
+    std::thread t4{generate, n*3/4, n, "D:\\Info Unitbv 2020-2021\\Semestrul I\\Modern C++\\QtApplication\\QtExample\\QtExample\\Step1\\file4.txt"};
+    t1.join();
+    t2.join();
+    t3.join();
+    t4.join();
+    plotting(n);
+
+}
 
 
-    /*
-    QString lineA = ui->lineEditA->text();
-
+void MainWindow::AddPointsButton()
+{
+    static int add=10000;
+    int n = ui->lineEditAddPoints->text().toInt();
     CMathParser parser;
-    double result;
+    ui->potWidget->addGraph(ui->potWidget->yAxis2, ui->potWidget->xAxis2);
+    ui->potWidget->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
 
-    std::string token = "n";
-    std::string token_value = ui->lineEditN->text().toStdString();
-
-    std::string ecuation = lineA.toStdString();
-
-    while (ecuation.find(token) != std::string::npos)
-    {
-        ecuation.replace(ecuation.find(token), token.size(), token_value);
-    }
-
-    if (parser.Calculate(ecuation.c_str(), &result) != CMathParser::ResultOk)
-    {
-        printf("Error in Formula: [%s].\n", parser.LastError()->Text);
-    }
-    */
-
-
-    //TO DO: initialize generate vector function
-
-    //generate2DPoints(parser,static_cast<uint8_t>(ui->lineEditN->text().toUShort()), points);
-
-
-    //QMessageBox qm;
-
-    //QString result;
-    //result = QString::number(points[0].x()) + QString::number(points[0].y());
-
-    //qm.setText(result);
-
-    //qm.exec();
+    auto generate =[&](int start, int stop, std::string fileName){
+        std::ofstream out(fileName,std::ios_base::app);
+        for (int i=start; i < stop; ++i) // data for graphs 2, 3 and 4
+            {
+                QCPGraphData temp = generate2DPoints(parser);
+                out<< temp.key<<" "<< temp.value<<"\n";
+            }
+    out.close();
+    };
+    std::thread t1{generate, add, n/4+add, "D:\\Info Unitbv 2020-2021\\Semestrul I\\Modern C++\\QtApplication\\QtExample\\QtExample\\Step1\\file1.txt"};
+    std::thread t2{generate, n/4+add, n*2/4+add, "D:\\Info Unitbv 2020-2021\\Semestrul I\\Modern C++\\QtApplication\\QtExample\\QtExample\\Step1\\file2.txt"};
+    std::thread t3{generate, n*2/4+add, n*3/4+add, "D:\\Info Unitbv 2020-2021\\Semestrul I\\Modern C++\\QtApplication\\QtExample\\QtExample\\Step1\\file3.txt"};
+    std::thread t4{generate, n*3/4+add, n+add, "D:\\Info Unitbv 2020-2021\\Semestrul I\\Modern C++\\QtApplication\\QtExample\\QtExample\\Step1\\file4.txt"};
+    t1.join();
+    t2.join();
+    t3.join();
+    t4.join();
+    plotting(n);
+    add+=n;
 }
 
 MainWindow::~MainWindow()
