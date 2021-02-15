@@ -15,6 +15,7 @@
 #include <thread>
 #include <regex>
 #include <sstream>
+#include <unordered_map>
 
 class MainWindow : public QMainWindow
 {
@@ -26,16 +27,23 @@ public:
 
 private slots:
     void SelectButtonStep1();
+    void SelectButtonStep2();
     void AddPointsButton();
 
 private:
+    std::array<double, 101> xK;
+    std::array<double, 101> yK;
 
     std::string replaceConstant(const std::string& input,const std::string& token,const std::string& token_value);
+    void replaceConstant(std::string& input,const std::unordered_map<std::string,std::string>& tokens);
+    void replaceFunction(std::string& line);
+    void replaceSerie(std::string& line, uint8_t k, double x, double y);
     double calculateExpression(CMathParser& mathParser,const std::string& line);
     double generateKthTerm(CMathParser& mathParser,const QString& line, uint8_t k);
-    double generateFComp(CMathParser& mathParser,const QString& lineToEdit,const QString& seriesLine, uint8_t k, double x, double y);
-    QCPGraphData generateFk(CMathParser& mathParser,uint8_t k, double x, double y);
-    QCPGraphData generate2DPoints(CMathParser& mathParser);
+    void generateKthTerms(CMathParser& parser);
+    double generateFComp(CMathParser& mathParser,std::string& lineToEdit,double xComp_k, double xComp_k1,double yComp_k, double yComp_k1, double x, double y);
+    QCPGraphData generateFk(CMathParser& mathParser, uint8_t k, double x, double y,std::string& fX,std::string& fY);
+    QCPGraphData generate2DPoints(CMathParser& mathParser,std::string& fX,std::string& fY);
     void plotting(int n);
     bool CheckConstraintN();
 
