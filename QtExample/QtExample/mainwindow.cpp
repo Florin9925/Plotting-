@@ -18,7 +18,9 @@ MainWindow::MainWindow(std::unique_ptr<QWidget> parent) :
     connect(ui->pushButtonStep1, &QPushButton::released, this, &MainWindow::SelectButtonStep1);
     connect(ui->pushButtonStep2, &QPushButton::released, this, &MainWindow::SelectButtonStep2);
     connect(ui->pushButtonAddPoints, &QPushButton::released, this, &MainWindow::AddPointsButton);
-    //connect(ui->pushButtonStep2, &QPushButton::released, this, &MainWindow::SelectButtonStep2);
+    connect(ui->pushButtonDefaultStep1, &QPushButton::released, this, &MainWindow::DefaultStep1);
+    connect(ui->pushButtonDefaultStep2, &QPushButton::released, this, &MainWindow::DefaultStep2);
+    connect(ui->actionExit, &QAction::triggered, this, &MainWindow::ActionExit);
 
 }
 
@@ -164,29 +166,27 @@ void MainWindow::plotting(int n)
     QVector<double> x4, y4;
 
 
-    auto readFile=[&](int start,std::string fileName)
+    auto readFile=[&](std::string fileName)
     {
-        for (std::ifstream in(fileName); !in.eof();)
-            {
-                std::string line;
-                std::getline(in, line);
-                if (std::regex_match(line, std::regex(R"(\d*.\d* \d*.\d*)"))) {
-                    std::stringstream ss(line);
-                    std::string item;
-
-                    std::getline(ss, item, ' ');
-                    x4.push_back( std::move(std::stod(item)));
-                    std::getline(ss, item, ' ');
-                    y4.push_back(std::move(std::stod(item)));
-                    ++start;
-                }
-            }
+        std::ifstream in(fileName);
+        std::string line;
+        std::getline(in, line);
+        while(!in.eof())
+        {
+            std::getline(in, line);
+            std::stringstream ss(line);
+            std::string item;
+            std::getline(ss, item, ' ');
+            x4.push_back(std::move(std::stod(item)));
+            std::getline(ss, item, ' ');
+            y4.push_back(std::move(std::stod(item)));
+         }
     };
 
-    readFile(0, "C:\\Users\\Dinu\\Desktop\\Proiect Baico\\QtExample\\QtExample\\Step1\\file1.txt");
-    readFile(n/4, "C:\\Users\\Dinu\\Desktop\\Proiect Baico\\QtExample\\QtExample\\Step1\\file2.txt");
-    readFile(n*2/4, "C:\\Users\\Dinu\\Desktop\\Proiect Baico\\QtExample\\QtExample\\Step1\\file3.txt");
-    readFile(n*3/4, "C:\\Users\\Dinu\\Desktop\\Proiect Baico\\QtExample\\QtExample\\Step1\\file4.txt");
+    readFile("..//.//QtExample\\Step1\\file1.txt");
+    readFile("..//.//QtExample\\Step1\\file2.txt");
+    readFile("..//.//QtExample\\Step1\\file3.txt");
+    readFile("..//.//QtExample\\Step1\\file4.txt");
 
 
     // pass data points to graphs:
@@ -195,10 +195,10 @@ void MainWindow::plotting(int n)
     ui->potWidget->xAxis2->setVisible(true);
     ui->potWidget->yAxis2->setVisible(true);
     // set ranges appropriate to show data:
-    ui->potWidget->xAxis->setRange(-0.5, 1.5);
-    ui->potWidget->xAxis2->setRange(-0.5, 1.5);
-    ui->potWidget->yAxis->setRange(-0.5, 1.5);
-    ui->potWidget->yAxis2->setRange(-0.5, 1.5);
+    ui->potWidget->xAxis->setRange(-2, 2);
+    ui->potWidget->xAxis2->setRange(-2, 2);
+    ui->potWidget->yAxis->setRange(-2, 2);
+    ui->potWidget->yAxis2->setRange(-2, 2);
     // set labels:
     ui->potWidget->xAxis->setLabel("Bottom axis with outward ticks");
     ui->potWidget->yAxis->setLabel("Left axis label");
@@ -232,7 +232,7 @@ void MainWindow::generateKthTerms(CMathParser& parser)
 
 void MainWindow::SelectButtonStep1()
 {
-    int n = 10;
+    int n = 10000;
     CMathParser parser;
 
 
@@ -252,16 +252,16 @@ void MainWindow::SelectButtonStep1()
         for (int i=start; i < stop; ++i) // data for graphs 2, 3 and 4
             {
                 QCPGraphData temp = generate2DPoints(parser,fX,fY);
-                out<< temp.key<<" "<< temp.value<<"\n";
+                out<<"\n"<<temp.key<<" "<< temp.value;
             }
     out.close();
     };
 
 
-    std::thread t1{generate, 0, n/4, "C:\\Users\\Dinu\\Desktop\\Proiect Baico\\QtExample\\QtExample\\Step1\\file1.txt"};
-    std::thread t2{generate, n/4, n*2/4, "C:\\Users\\Dinu\\Desktop\\Proiect Baico\\QtExample\\QtExample\\Step1\\file2.txt"};
-    std::thread t3{generate, n*2/4, n*3/4, "C:\\Users\\Dinu\\Desktop\\Proiect Baico\\QtExample\\QtExample\\Step1\\file3.txt"};
-    std::thread t4{generate, n*3/4, n, "C:\\Users\\Dinu\\Desktop\\Proiect Baico\\QtExample\\QtExample\\Step1\\file4.txt"};
+    std::thread t1{generate, 0, n/4, "..//.//QtExample\\Step1\\file1.txt"};
+    std::thread t2{generate, n/4, n*2/4, "..//.//QtExample\\Step1\\file2.txt"};
+    std::thread t3{generate, n*2/4, n*3/4, "..//.//QtExample\\Step1\\file3.txt"};
+    std::thread t4{generate, n*3/4, n, "..//.//QtExample\\Step1\\file4.txt"};
     t1.join();
     t2.join();
     t3.join();
@@ -313,16 +313,32 @@ void MainWindow::AddPointsButton()
             }
     out.close();
     };
-    std::thread t1{generate, add, n/4+add, "C:\\Users\\Dinu\\Desktop\\Proiect Baico\\QtExample\\QtExample\\Step1\\file1.txt"};
-    std::thread t2{generate, n/4+add, n*2/4+add, "C:\\Users\\Dinu\\Desktop\\Proiect Baico\\QtExample\\QtExample\\Step1\\file2.txt"};
-    std::thread t3{generate, n*2/4+add, n*3/4+add, "C:\\Users\\Dinu\\Desktop\\Proiect Baico\\QtExample\\QtExample\\Step1\\file3.txt"};
-    std::thread t4{generate, n*3/4+add, n+add, "C:\\Users\\Dinu\\Desktop\\Proiect Baico\\QtExample\\QtExample\\Step1\\file4.txt"};
+    std::thread t1{generate, add, n/4+add, "..//.//QtExample\\Step1\\file1.txt"};
+    std::thread t2{generate, n/4+add, n*2/4+add, "..//.//QtExample\\Step1\\file2.txt"};
+    std::thread t3{generate, n*2/4+add, n*3/4+add, "..//.//QtExample\\Step1\\file3.txt"};
+    std::thread t4{generate, n*3/4+add, n+add, "..//.//QtExample\\Step1\\file4.txt"};
     t1.join();
     t2.join();
     t3.join();
     t4.join();
     plotting(n);
     add+=n;
+}
+
+void MainWindow::ActionExit()
+{
+    exit(1);
+}
+
+void MainWindow::DefaultStep1()
+{
+
+}
+
+
+void MainWindow::DefaultStep2()
+{
+
 }
 
 MainWindow::~MainWindow()

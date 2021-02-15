@@ -27,6 +27,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"> background-color: #19232D;border: 0px solid #32414B;padding: 0px;color: #F0F0F0;selection - background - color: #1464A0;selection - color: #F0F0F0;</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QPushButton" name="pushButtonStep1">
     <property name="geometry">
@@ -39,11 +42,21 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>18</pointsize>
+      <family>Century Gothic</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
      </font>
     </property>
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-radius: 10px;;
+font: 10pt  &quot;Century Gothic&quot;;
+color:#19232D;
+background:#148dfa;</string>
     </property>
     <property name="text">
      <string>Step1</string>
@@ -60,11 +73,21 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>18</pointsize>
+      <family>Century Gothic</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
      </font>
     </property>
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-radius: 10px;;
+font: 10pt  &quot;Century Gothic&quot;;
+color:#19232D;
+background:#148dfa;</string>
     </property>
     <property name="text">
      <string>Step2</string>
@@ -78,6 +101,12 @@
       <width>71</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
     </property>
     <property name="text">
      <string>1</string>
@@ -128,6 +157,12 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
+    </property>
     <property name="text">
      <string>SQRT(n)/(1+SQRT(n))</string>
     </property>
@@ -158,6 +193,12 @@
       <width>321</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
     </property>
     <property name="text">
      <string>SIN(n)/SQRT(1+n)</string>
@@ -190,6 +231,12 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
+    </property>
     <property name="text">
      <string>(((XN)-(XN-1))*X+b*(XN-1)-a*(XN))/(b-a)</string>
     </property>
@@ -197,17 +244,26 @@
    <widget class="QLineEdit" name="lineEditFy">
     <property name="geometry">
      <rect>
-      <x>580</x>
+      <x>590</x>
       <y>170</y>
       <width>441</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
     </property>
     <property name="text">
      <string>((YN)-(YN-1)-(DN)*((M)-m))*X/(b-a)+(DN)*Y+(b*(YN-1)-a*(YN)-(DN)*(b*m-a*(M)))/(b-a)</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>570</x>
@@ -229,6 +285,12 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -241,6 +303,12 @@
       <width>181</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
     </property>
     <property name="text">
      <string/>
@@ -255,6 +323,12 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -268,6 +342,12 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -280,6 +360,12 @@
       <width>181</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
     </property>
     <property name="text">
      <string/>
@@ -402,6 +488,12 @@
       <height>511</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
+    </property>
    </widget>
    <widget class="QLineEdit" name="lineEditA">
     <property name="geometry">
@@ -411,6 +503,12 @@
       <width>181</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
     </property>
     <property name="text">
      <string>0</string>
@@ -425,6 +523,12 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
+    </property>
     <property name="text">
      <string>0</string>
     </property>
@@ -437,6 +541,12 @@
       <width>181</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
     </property>
     <property name="text">
      <string>0</string>
@@ -487,6 +597,12 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
+    </property>
     <property name="text">
      <string>1</string>
     </property>
@@ -536,6 +652,12 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
+    </property>
     <property name="text">
      <string>0.4</string>
     </property>
@@ -567,6 +689,12 @@
       <height>41</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -582,14 +710,86 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>18</pointsize>
+      <family>Century Gothic</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
      </font>
     </property>
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
+    <property name="styleSheet">
+     <string notr="true">border-radius: 10px;;
+font: 10pt  &quot;Century Gothic&quot;;
+color:#19232D;
+background:#148dfa;</string>
+    </property>
     <property name="text">
      <string>Add points</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonDefaultStep1">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>0</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Century Gothic</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-radius: 10px;;
+font: 10pt  &quot;Century Gothic&quot;;
+color:#19232D;
+background:#148dfa;</string>
+    </property>
+    <property name="text">
+     <string>Default step1</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonDefaultStep2">
+    <property name="geometry">
+     <rect>
+      <x>690</x>
+      <y>0</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Century Gothic</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-radius: 10px;;
+font: 10pt  &quot;Century Gothic&quot;;
+color:#19232D;
+background:#148dfa;</string>
+    </property>
+    <property name="text">
+     <string>Default step2</string>
     </property>
    </widget>
   </widget>
@@ -599,7 +799,7 @@
      <x>0</x>
      <y>0</y>
      <width>1600</width>
-     <height>27</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuExit">

@@ -3,7 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QIntValidator>
 #include <QVector2D>
-
+#include<QtXml/QDomDocument>
 #include "CMathParser.h"
 #include "ui_mainwindow.h"
 
@@ -29,6 +29,9 @@ private slots:
     void SelectButtonStep1();
     void SelectButtonStep2();
     void AddPointsButton();
+    void DefaultStep1();
+    void DefaultStep2();
+    void ActionExit();
 
 private:
     std::array<double, 101> xK;
