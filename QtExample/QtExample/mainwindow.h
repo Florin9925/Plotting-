@@ -3,7 +3,9 @@
 #include <QtWidgets/QMainWindow>
 #include <QIntValidator>
 #include <QVector2D>
-#include<QtXml/QDomDocument>
+
+
+
 #include "CMathParser.h"
 #include "ui_mainwindow.h"
 
@@ -47,7 +49,7 @@ private:
     double generateFComp(CMathParser& mathParser,std::string& lineToEdit,double xComp_k, double xComp_k1,double yComp_k, double yComp_k1, double x, double y);
     QCPGraphData generateFk(CMathParser& mathParser, uint8_t k, double x, double y,std::string& fX,std::string& fY);
     QCPGraphData generate2DPoints(CMathParser& mathParser,std::string& fX,std::string& fY);
-    void plotting(int n);
+    void plotting();
     bool CheckConstraintN();
 
 private:

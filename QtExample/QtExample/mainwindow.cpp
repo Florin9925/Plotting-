@@ -1,5 +1,9 @@
 #include "mainwindow.h"
 #include <QMessageBox>
+//#include <QtXml/QtXml>
+
+//#include<QtXml/QDomDocument>
+#include <QFile>
 
 MainWindow::MainWindow(std::unique_ptr<QWidget> parent) :
     QMainWindow(parent.get()),
@@ -147,16 +151,20 @@ QCPGraphData MainWindow::generate2DPoints(CMathParser& mathParser,std::string& f
     return generateFk(mathParser, k, x0, y0, fX, fY);;
 }
 
-void MainWindow::plotting(int n)
+void MainWindow::plotting()
 {
-
+    ui->potWidget->legend->clearItems();
     ui->potWidget->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom)); // period as decimal separator and comma as thousand separator
     ui->potWidget->legend->setVisible(true);
+
+    ui->potWidget->addGraph(ui->potWidget->yAxis2, ui->potWidget->xAxis2);
+    ui->potWidget->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
+
 
     QFont legendFont = font();  // start out with MainWindow's font..
     legendFont.setPointSize(9); // and make a bit smaller for legend
     ui->potWidget->legend->setFont(legendFont);
-    ui->potWidget->legend->setBrush(QBrush(QColor(255,255,255,230)));
+    ui->potWidget->legend->setBrush(QBrush(QColor(255,255,255,1)));
 
     //ui->potWidget->addGraph(ui->potWidget->yAxis2, ui->potWidget->xAxis2);
     ui->potWidget->graph(0)->setPen(QColor(50, 50, 50, 255));
@@ -164,23 +172,36 @@ void MainWindow::plotting(int n)
 
     // generate data, just playing with numbers, not much to learn here:
     QVector<double> x4, y4;
+    int minX=INT_MAX;
+    int maxX=INT_MIN;
+    int minY=INT_MAX;
+    int maxY=INT_MIN;
 
 
     auto readFile=[&](std::string fileName)
     {
-        std::ifstream in(fileName);
-        std::string line;
-        std::getline(in, line);
-        while(!in.eof())
+        for (std::ifstream in(fileName); !in.eof();)
         {
+            std::string line;
             std::getline(in, line);
-            std::stringstream ss(line);
-            std::string item;
-            std::getline(ss, item, ' ');
-            x4.push_back(std::move(std::stod(item)));
-            std::getline(ss, item, ' ');
-            y4.push_back(std::move(std::stod(item)));
-         }
+            if (std::regex_match(line, std::regex(R"([+-]?(\d*.\d*) [+-]?(\d*.\d*))")))
+            {
+                std::stringstream ss(line);
+                std::string item;
+                std::getline(ss, item, ' ');
+                double number=std::stod(item);
+
+                if(number<minX) minX=number;
+                else if(number>maxX) maxX=number;
+                x4.push_back(std::move(number));
+
+                std::getline(ss, item, ' ');
+                number=std::stod(item);
+                if(number<minY) minY=number;
+                else if(number>maxY) maxY=number;
+                y4.push_back(std::move(number));
+             }
+        }
     };
 
     readFile("..//.//QtExample\\Step1\\file1.txt");
@@ -195,10 +216,10 @@ void MainWindow::plotting(int n)
     ui->potWidget->xAxis2->setVisible(true);
     ui->potWidget->yAxis2->setVisible(true);
     // set ranges appropriate to show data:
-    ui->potWidget->xAxis->setRange(-2, 2);
-    ui->potWidget->xAxis2->setRange(-2, 2);
-    ui->potWidget->yAxis->setRange(-2, 2);
-    ui->potWidget->yAxis2->setRange(-2, 2);
+    ui->potWidget->xAxis->setRange(minX-1, maxX+1);
+    ui->potWidget->xAxis2->setRange(minX-1, maxX+1);
+    ui->potWidget->yAxis->setRange(minY-1, maxY+1);
+    ui->potWidget->yAxis2->setRange(minY-1, maxY+1);
     // set labels:
     ui->potWidget->xAxis->setLabel("Bottom axis with outward ticks");
     ui->potWidget->yAxis->setLabel("Left axis label");
@@ -239,8 +260,7 @@ void MainWindow::SelectButtonStep1()
     //Generez toti xn,yn
     generateKthTerms(parser);
 
-    ui->potWidget->addGraph(ui->potWidget->yAxis2, ui->potWidget->xAxis2);
-    ui->potWidget->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
+
 
     std::string fX(ui->lineEditFx->text().toStdString()), fY(ui->lineEditFy->text().toStdString());
 
@@ -252,7 +272,7 @@ void MainWindow::SelectButtonStep1()
         for (int i=start; i < stop; ++i) // data for graphs 2, 3 and 4
             {
                 QCPGraphData temp = generate2DPoints(parser,fX,fY);
-                out<<"\n"<<temp.key<<" "<< temp.value;
+                out<<temp.key<<" "<< temp.value<<"\n";
             }
     out.close();
     };
@@ -266,7 +286,7 @@ void MainWindow::SelectButtonStep1()
     t2.join();
     t3.join();
     t4.join();
-    plotting(n);
+    plotting();
 
 }
 
@@ -296,10 +316,8 @@ void MainWindow::AddPointsButton()
     CMathParser parser;
 
     generateKthTerms(parser);
-    ui->potWidget->addGraph(ui->potWidget->yAxis2, ui->potWidget->xAxis2);
-    ui->potWidget->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
 
-     std::string fX(ui->lineEditFx->text().toStdString()), fY(ui->lineEditFy->text().toStdString());
+    std::string fX(ui->lineEditFx->text().toStdString()), fY(ui->lineEditFy->text().toStdString());
 
     replaceFunction(fX);
     replaceFunction(fY);
@@ -321,7 +339,7 @@ void MainWindow::AddPointsButton()
     t2.join();
     t3.join();
     t4.join();
-    plotting(n);
+    plotting();
     add+=n;
 }
 
@@ -332,7 +350,17 @@ void MainWindow::ActionExit()
 
 void MainWindow::DefaultStep1()
 {
-
+    /*
+    QDomDocument doc("mydocument");
+    QFile file("mydocument.xml");
+    if (!file.open(QIODevice::ReadOnly))
+        return;
+    if (!doc.setContent(&file)) {
+        file.close();
+        return;
+    }
+    file.close();
+    */
 }
 
 
