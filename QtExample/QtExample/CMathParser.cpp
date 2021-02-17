@@ -17,88 +17,83 @@
 //using namespace NSWFL::String;
 
 #ifndef _CVTBUFSIZE
-#define _CVTBUFSIZE (309+40) /* Number of digits in maximum double precision value + slop */
+#define _CVTBUFSIZE (309 + 40) /* Number of digits in maximum double precision value + slop */
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const char* sNativeMethods[] =
-{
-    "ACOS",
-    "ASIN",
-    "ATAN",
-    "ATAN2",
-    "LDEXP",
-    "SINH",
-    "COSH",
-    "TANH",
-    "LOG",
-    "LOG10",
-    "EXP",
-    "MODPOW",
-    "SQRT",
-    "POW",
-    "FLOOR",
-    "CEIL",
-    "NOT",
-    "AVG",
-    "SUM",
-    "TAN",
-    "ATAN",
-    "SIN",
-    "COS",
-    "ABS",
-    NULL
-};
+const char *sNativeMethods[] =
+    {
+        "ACOS",
+        "ASIN",
+        "ATAN",
+        "ATAN2",
+        "LDEXP",
+        "SINH",
+        "COSH",
+        "TANH",
+        "LOG",
+        "LOG10",
+        "EXP",
+        "MODPOW",
+        "SQRT",
+        "POW",
+        "FLOOR",
+        "CEIL",
+        "NOT",
+        "AVG",
+        "SUM",
+        "TAN",
+        "ATAN",
+        "SIN",
+        "COS",
+        "ABS",
+        NULL};
 
-const char* sPreOrder[] =
-{
-    "!",  //Logical NOT
-    NULL
-};
+const char *sPreOrder[] =
+    {
+        "!", //Logical NOT
+        NULL};
 
-const char* sFirstOrder[] =
-{
-    "~",  //Bitwise NOT
-    "*",  //Multiplication
-    "/",  //Division
-    "%",  //Modulation
-    NULL
-};
+const char *sFirstOrder[] =
+    {
+        "~", //Bitwise NOT
+        "*", //Multiplication
+        "/", //Division
+        "%", //Modulation
+        NULL};
 
-const char* sSecondOrder[] =
-{
-    "+",  //Addition
-    "-",  //Subtraction
-    NULL
-};
+const char *sSecondOrder[] =
+    {
+        "+", //Addition
+        "-", //Subtraction
+        NULL};
 
-const char* sThirdOrder[] =
-{
-    "<>", //Logical Not Equal
-    "|=", //Bitwise Or Equal
-    "&=", //Bitwise And Equal
-    "^=", //Bitwise XOR Equal
-    "<=", //Logical Less or Equal
-    ">=", //Logical Greater or Equal
-    "!=", //Logical Not Equal
+const char *sThirdOrder[] =
+    {
+        "<>", //Logical Not Equal
+        "|=", //Bitwise Or Equal
+        "&=", //Bitwise And Equal
+        "^=", //Bitwise XOR Equal
+        "<=", //Logical Less or Equal
+        ">=", //Logical Greater or Equal
+        "!=", //Logical Not Equal
 
-    "<<", //Bitwise Left Shift
-    ">>", //Bitwise Right Shift
+        "<<", //Bitwise Left Shift
+        ">>", //Bitwise Right Shift
 
-    "=",  //Logical Equals
-    ">",  //Logical Greater Than
-    "<",  //Logical Less Than
+        "=", //Logical Equals
+        ">", //Logical Greater Than
+        "<", //Logical Less Than
 
-    "&&", //Logical AND
-    "||", //Logical OR
+        "&&", //Logical AND
+        "||", //Logical OR
 
-    "|",  //Bitwise OR
-    "&",  //Bitwise AND
-    "^",  //Exclusive OR
+        "|", //Bitwise OR
+        "&", //Bitwise AND
+        "^", //Exclusive OR
 
-    NULL
-};
+        NULL};
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -107,7 +102,7 @@ const char* sThirdOrder[] =
 /// </summary>
 /// <param name="sName"></param>
 /// <returns></returns>
-bool CMathParser::IsNativeMethod(const char* sName)
+bool CMathParser::IsNativeMethod(const char *sName)
 {
     for (int i = 0; sNativeMethods[i] != NULL; i++)
     {
@@ -122,7 +117,7 @@ bool CMathParser::IsNativeMethod(const char* sName)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int CMathParser::TrailingChars(const char* sVal, int iStartPos, const char cChar)
+int CMathParser::TrailingChars(const char *sVal, int iStartPos, const char cChar)
 {
     for (int i = iStartPos; i > 0; i--)
     {
@@ -137,7 +132,7 @@ int CMathParser::TrailingChars(const char* sVal, int iStartPos, const char cChar
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int CMathParser::SmartRound(double dValue, char* sOut, int iMaxOutSz)
+int CMathParser::SmartRound(double dValue, char *sOut, int iMaxOutSz)
 {
     char sVal[_CVTBUFSIZE * 2];
     char sFormat[32];
@@ -177,7 +172,8 @@ int CMathParser::SmartRound(double dValue, char* sOut, int iMaxOutSz)
         sprintf_s(sFormat, sizeof(sFormat), "%%.%df", iRoundTo);
         sprintf_s(sOut, iMaxOutSz, sFormat, dValue);
     }
-    else {
+    else
+    {
         //Detect trailing 0's (ex: 3.0000000000000).
         int iZeros = TrailingChars(sVal, iValLen - 2, '0');
         if (iZeros > 4)
@@ -186,7 +182,8 @@ int CMathParser::SmartRound(double dValue, char* sOut, int iMaxOutSz)
             sprintf_s(sFormat, sizeof(sFormat), "%%.%df", iRoundTo);
             sprintf_s(sOut, iMaxOutSz, sFormat, dValue);
         }
-        else {
+        else
+        {
             strcpy_s(sOut, iMaxOutSz, sVal);
         }
     }
@@ -224,7 +221,7 @@ int CMathParser::SmartRound(double dValue, char* sOut, int iMaxOutSz)
 /// <param name="sOut"></param>
 /// <param name="iMaxOutSz"></param>
 /// <returns></returns>
-int CMathParser::DoubleToChar(double dVal, char* sOut, int iMaxOutSz)
+int CMathParser::DoubleToChar(double dVal, char *sOut, int iMaxOutSz)
 {
     int iSigned = 0;
     int iDecPos = 0;
@@ -304,7 +301,7 @@ int CMathParser::DoubleToChar(double dVal, char* sOut, int iMaxOutSz)
 /// <param name="iOutSz"></param>
 /// <param name="iBegin"></param>
 /// <returns></returns>
-CMathParser::MathResult CMathParser::GetLeftNumber(MATHEXPRESSION* pExp, int iStartPos, char* sOutVal, int iMaxSz, int* iOutSz, int* iBegin)
+CMathParser::MathResult CMathParser::GetLeftNumber(MATHEXPRESSION *pExp, int iStartPos, char *sOutVal, int iMaxSz, int *iOutSz, int *iBegin)
 {
     int iRPos = (iStartPos - 1);
     int iWPos = 0;
@@ -324,11 +321,13 @@ CMathParser::MathResult CMathParser::GetLeftNumber(MATHEXPRESSION* pExp, int iSt
                         break;
                     }
                 }
-                else {
+                else
+                {
                     //Negative or Positive number is explicitly defined.
                 }
             }
-            else {
+            else
+            {
                 break;
             }
         }
@@ -362,7 +361,7 @@ CMathParser::MathResult CMathParser::GetLeftNumber(MATHEXPRESSION* pExp, int iSt
 /// <param name="iOutSz"></param>
 /// <param name="iEnd"></param>
 /// <returns></returns>
-CMathParser::MathResult CMathParser::GetRightNumber(MATHEXPRESSION* pExp, int iStartPos, char* sOutVal, int iMaxSz, int* iOutSz, int* iEnd)
+CMathParser::MathResult CMathParser::GetRightNumber(MATHEXPRESSION *pExp, int iStartPos, char *sOutVal, int iMaxSz, int *iOutSz, int *iEnd)
 {
     int iRPos = iStartPos;
     int iWPos = 0;
@@ -380,7 +379,8 @@ CMathParser::MathResult CMathParser::GetRightNumber(MATHEXPRESSION* pExp, int iS
                     break;
                 }
             }
-            else {
+            else
+            {
                 break;
             }
         }
@@ -411,7 +411,7 @@ CMathParser::MathResult CMathParser::GetRightNumber(MATHEXPRESSION* pExp, int iS
 /// <param name="iOpPos"></param>
 /// <param name="iOpSz"></param>
 /// <returns></returns>
-CMathParser::MathResult CMathParser::ParseOperator(MATHINSTANCE* pInst, MATHEXPRESSION* pExp, const char* sOp, int iOpPos, int iOpSz)
+CMathParser::MathResult CMathParser::ParseOperator(MATHINSTANCE *pInst, MATHEXPRESSION *pExp, const char *sOp, int iOpPos, int iOpSz)
 {
     char sVal[_CVTBUFSIZE];
     char sVal1[_CVTBUFSIZE];
@@ -482,7 +482,8 @@ CMathParser::MathResult CMathParser::ParseOperator(MATHINSTANCE* pInst, MATHEXPR
                     return this->SetError(ResultIntegerTextConversionFailed, "Integer->Text converion failed.");
                 }
             }
-            else {
+            else
+            {
                 if ((ErrorCode = this->PerformDoubleOperation(pInst, atof(sVal1), sOp, atof(sVal2))) != ResultOk)
                 {
                     return ErrorCode;
@@ -514,18 +515,21 @@ CMathParser::MathResult CMathParser::ParseOperator(MATHINSTANCE* pInst, MATHEXPR
                     {
                         this->pDebugProc(this, sDebugMath);
                     }
-                    else {
+                    else
+                    {
                         printf("%s", sDebugMath);
                     }
                 }
-                else {
+                else
+                {
                     sprintf_s(sDebugMath, sizeof(sDebugMath), "\t(%.4f %s %.4f) = %.4f\n", atof(sVal1), sOp, atof(sVal2), atof(sVal));
 
                     if (this->pDebugProc)
                     {
                         this->pDebugProc(this, sDebugMath);
                     }
-                    else {
+                    else
+                    {
                         printf("%s", sDebugMath);
                     }
                 }
@@ -536,11 +540,13 @@ CMathParser::MathResult CMathParser::ParseOperator(MATHINSTANCE* pInst, MATHEXPR
                 return ErrorCode;
             }
         }
-        else {
+        else
+        {
             return this->SetError(ResultRightValueFailed, "Value to the right of operator is missing or invalid.");
         }
     }
-    else {
+    else
+    {
         if (strcmp(sOp, "!") == 0 || strcmp(sOp, "~") == 0)
         {
             if ((ErrorCode = this->GetRightNumber(pExp, iOpPos + iOpSz, sVal2, sizeof(sVal2), &iValSz, &iEnd)) != ResultOk)
@@ -564,7 +570,8 @@ CMathParser::MathResult CMathParser::ParseOperator(MATHINSTANCE* pInst, MATHEXPR
                         return ErrorCode;
                     }
                 }
-                else {
+                else
+                {
                     return this->SetError(ResultInvalidOperator, "Invalid operator: %s.", sOp);
                 }
 
@@ -584,7 +591,8 @@ CMathParser::MathResult CMathParser::ParseOperator(MATHINSTANCE* pInst, MATHEXPR
                     {
                         this->pDebugProc(this, sDebugMath);
                     }
-                    else {
+                    else
+                    {
                         printf("%s", sDebugMath);
                     }
                 }
@@ -594,7 +602,8 @@ CMathParser::MathResult CMathParser::ParseOperator(MATHINSTANCE* pInst, MATHEXPR
                     return ErrorCode;
                 }
             }
-            else {
+            else
+            {
                 return this->SetError(ResultRightValueFailed, "Value to the right of operator is missing or invalid.");
             }
         }
@@ -602,7 +611,8 @@ CMathParser::MathResult CMathParser::ParseOperator(MATHINSTANCE* pInst, MATHEXPR
         {
             return ResultFoundNegative;
         }
-        else {
+        else
+        {
             return this->SetError(ResultInvalidToken, "Invalid token: %s", sOp);
         }
     }
@@ -617,7 +627,7 @@ CMathParser::MathResult CMathParser::ParseOperator(MATHINSTANCE* pInst, MATHEXPR
 /// </summary>
 /// <param name="pExp"></param>
 /// <returns></returns>
-int CMathParser::GetFreestandingNotOperation(MATHEXPRESSION* pExp) //Pre order.
+int CMathParser::GetFreestandingNotOperation(MATHEXPRESSION *pExp) //Pre order.
 {
     for (int iRPos = 0; iRPos < pExp->Length; iRPos++)
     {
@@ -656,7 +666,7 @@ int CMathParser::GetFreestandingNotOperation(MATHEXPRESSION* pExp) //Pre order.
 /// </summary>
 /// <param name="pExp"></param>
 /// <returns></returns>
-int CMathParser::GetFirstOrderOperation(MATHEXPRESSION* pExp) //First order.
+int CMathParser::GetFirstOrderOperation(MATHEXPRESSION *pExp) //First order.
 {
     for (int iRPos = 1; iRPos < pExp->Length; iRPos++)
     {
@@ -677,7 +687,7 @@ int CMathParser::GetFirstOrderOperation(MATHEXPRESSION* pExp) //First order.
 /// <param name="pExp"></param>
 /// <param name="iStartPos"></param>
 /// <returns></returns>
-int CMathParser::GetSecondOrderOperation(MATHEXPRESSION* pExp, int iStartPos) //Second order.
+int CMathParser::GetSecondOrderOperation(MATHEXPRESSION *pExp, int iStartPos) //Second order.
 {
     for (int iRPos = iStartPos; iRPos < pExp->Length; iRPos++)
     {
@@ -691,7 +701,7 @@ int CMathParser::GetSecondOrderOperation(MATHEXPRESSION* pExp, int iStartPos) //
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::CalculateSimpleExpression(MATHINSTANCE* pInst, MATHEXPRESSION* pSubExp)
+CMathParser::MathResult CMathParser::CalculateSimpleExpression(MATHINSTANCE *pInst, MATHEXPRESSION *pSubExp)
 {
     MathResult ErrorCode = ResultOk;
 
@@ -699,7 +709,7 @@ CMathParser::MathResult CMathParser::CalculateSimpleExpression(MATHINSTANCE* pIn
     int iOpPos = 0;
     int iOpSz = 0;
 
-    char* sOp = NULL;
+    char *sOp = NULL;
 
     int iRPos = 0;
     int iWPos = 0;
@@ -718,9 +728,10 @@ CMathParser::MathResult CMathParser::CalculateSimpleExpression(MATHINSTANCE* pIn
 
         if (pSubExp->Text[iOpPos] == '!')
         {
-            sOp = (char*)"!";
+            sOp = (char *)"!";
         }
-        else {
+        else
+        {
             return this->SetError(ResultInvalidOperator, "Invalid operator: %c.", pSubExp->Text[iOpPos]);
         }
 
@@ -735,24 +746,29 @@ CMathParser::MathResult CMathParser::CalculateSimpleExpression(MATHINSTANCE* pIn
     {
         iOpSz = 1;
 
-        if (pSubExp->Text[iOpPos] == '*') {
-            sOp = (char*)"*";
+        if (pSubExp->Text[iOpPos] == '*')
+        {
+            sOp = (char *)"*";
         }
-        else if (pSubExp->Text[iOpPos] == '/') {
-            sOp = (char*)"/";
+        else if (pSubExp->Text[iOpPos] == '/')
+        {
+            sOp = (char *)"/";
         }
-        else if (pSubExp->Text[iOpPos] == '%') {
-            sOp = (char*)"%";
+        else if (pSubExp->Text[iOpPos] == '%')
+        {
+            sOp = (char *)"%";
         }
-        else if (pSubExp->Text[iOpPos] == '~') {
-            sOp = (char*)"~";
+        else if (pSubExp->Text[iOpPos] == '~')
+        {
+            sOp = (char *)"~";
         }
         /*
         else if(pSubExp->Text[iOpPos] == '!'){
             sOp = "!";
         }
         */
-        else {
+        else
+        {
             return this->SetError(ResultInvalidOperator, "Invalid operator: %c.", pSubExp->Text[iOpPos]);
         }
 
@@ -769,15 +785,17 @@ CMathParser::MathResult CMathParser::CalculateSimpleExpression(MATHINSTANCE* pIn
     {
         iOpSz = 1;
 
-        if (pSubExp->Text[iOpPos] == '-') {
-            sOp = (char*)"-";
+        if (pSubExp->Text[iOpPos] == '-')
+        {
+            sOp = (char *)"-";
         }
-        else if (pSubExp->Text[iOpPos] == '+') {
+        else if (pSubExp->Text[iOpPos] == '+')
+        {
 
-            sOp = (char*)"+";
-
+            sOp = (char *)"+";
         }
-        else {
+        else
+        {
             return this->SetError(ResultInvalidOperator, "Invalid operator: %c.", pSubExp->Text[iOpPos]);
         }
 
@@ -787,7 +805,8 @@ CMathParser::MathResult CMathParser::CalculateSimpleExpression(MATHINSTANCE* pIn
             {
                 iStartPos = iOpPos + 1;
             }
-            else {
+            else
+            {
                 return ErrorCode;
             }
         }
@@ -849,7 +868,8 @@ CMathParser::MathResult CMathParser::CalculateSimpleExpression(MATHINSTANCE* pIn
             {
                 this->pDebugProc(this, sDebugMath);
             }
-            else {
+            else
+            {
                 printf("%s", sDebugMath);
             }
         }
@@ -870,7 +890,8 @@ CMathParser::MathResult CMathParser::CalculateSimpleExpression(MATHINSTANCE* pIn
             {
                 this->pDebugProc(this, sDebugMath);
             }
-            else {
+            else
+            {
                 printf("%s", sDebugMath);
             }
         }
@@ -880,7 +901,8 @@ CMathParser::MathResult CMathParser::CalculateSimpleExpression(MATHINSTANCE* pIn
             return ErrorCode;
         }
     }
-    else {
+    else
+    {
         return this->SetError(ResultInvalidToken, "Invalid token: %c", pSubExp->Text[0]);
     }
 
@@ -895,17 +917,19 @@ CMathParser::MathResult CMathParser::CalculateSimpleExpression(MATHINSTANCE* pIn
 /// <param name="sExpression"></param>
 /// <param name="iExpressionSz"></param>
 /// <returns></returns>
-int CMathParser::MatchParentheses(const char* sExpression, const int iExpressionSz)
+int CMathParser::MatchParentheses(const char *sExpression, const int iExpressionSz)
 {
     int iRPos = 0;
     int iScope = 0;
 
     while (iRPos < iExpressionSz)
     {
-        if (sExpression[iRPos] == '(') {
+        if (sExpression[iRPos] == '(')
+        {
             iScope++;
         }
-        else if (sExpression[iRPos] == ')') {
+        else if (sExpression[iRPos] == ')')
+        {
             iScope--;
         }
         iRPos++;
@@ -916,11 +940,11 @@ int CMathParser::MatchParentheses(const char* sExpression, const int iExpression
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::AllocateExpression(MATHEXPRESSION* pExp, const char* sSource, int iSourceSz)
+CMathParser::MathResult CMathParser::AllocateExpression(MATHEXPRESSION *pExp, const char *sSource, int iSourceSz)
 {
     pExp->Allocated = (int)iSourceSz + 1;
 
-    pExp->Text = (char*)calloc(sizeof(char), pExp->Allocated);
+    pExp->Text = (char *)calloc(sizeof(char), pExp->Allocated);
     if (!pExp->Text)
     {
         return this->SetError(ResultMemoryAllocationError, "Memory allocation error.");
@@ -974,7 +998,7 @@ CMathParser::MathResult CMathParser::AllocateExpression(MATHEXPRESSION* pExp, co
 
                 if (sSource[iRPos] == '(')
                 {
-                    double* pOutParameters = NULL;
+                    double *pOutParameters = NULL;
                     int iParameterCount = 0;
 
                     double dProcValue = 0;
@@ -1009,7 +1033,7 @@ CMathParser::MathResult CMathParser::AllocateExpression(MATHEXPRESSION* pExp, co
                     if (iSourceSz + iVarValLength >= pExp->Allocated)
                     {
                         pExp->Allocated = (iSourceSz + iVarValLength) + 1;
-                        pExp->Text = (char*)realloc(pExp->Text, sizeof(char) * pExp->Allocated);
+                        pExp->Text = (char *)realloc(pExp->Text, sizeof(char) * pExp->Allocated);
                         if (!pExp->Text)
                         {
                             return this->SetError(ResultMemoryAllocationError, "Memory allocation error.");
@@ -1037,7 +1061,7 @@ CMathParser::MathResult CMathParser::AllocateExpression(MATHEXPRESSION* pExp, co
                     if (iSourceSz + iVarValLength >= pExp->Allocated)
                     {
                         pExp->Allocated = (iSourceSz + iVarValLength) + 1;
-                        pExp->Text = (char*)realloc(pExp->Text, sizeof(char) * pExp->Allocated);
+                        pExp->Text = (char *)realloc(pExp->Text, sizeof(char) * pExp->Allocated);
                         if (!pExp->Text)
                         {
                             return this->SetError(ResultMemoryAllocationError, "Memory allocation error.");
@@ -1052,7 +1076,8 @@ CMathParser::MathResult CMathParser::AllocateExpression(MATHEXPRESSION* pExp, co
                 iRPos--; //We need to let the outer loop determine if we are done yet.
                 continue;
             }
-            else {
+            else
+            {
                 return this->SetError(ResultInvalidToken, "Token is invalid: %c", sSource[iRPos]);
             }
 
@@ -1060,7 +1085,8 @@ CMathParser::MathResult CMathParser::AllocateExpression(MATHEXPRESSION* pExp, co
 
             bAfterWhiteSpace = false;
         }
-        else {
+        else
+        {
             bAfterWhiteSpace = true;
         }
     }
@@ -1081,7 +1107,7 @@ CMathParser::MathResult CMathParser::AllocateExpression(MATHEXPRESSION* pExp, co
 /// <param name="pOutResult"></param>
 /// <returns></returns>
 CMathParser::MathResult CMathParser::ExecuteNativeMethod(
-    const char* sMethodName, double* dParameters, int iParamCount, double* pOutResult)
+    const char *sMethodName, double *dParameters, int iParamCount, double *pOutResult)
 {
     if (_strcmpi(sMethodName, "NOT") == 0)
     {
@@ -1322,7 +1348,7 @@ CMathParser::MathResult CMathParser::ExecuteNativeMethod(
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CMathParser::MathResult CMathParser::ParseMethodParameters(
-    const char* sSource, int iSourceSz, int* piRPos, double** pOutParameters, int* piOutParamCount)
+    const char *sSource, int iSourceSz, int *piRPos, double **pOutParameters, int *piOutParamCount)
 {
     int iRPos = *piRPos;
     int iWPos = 0;
@@ -1349,7 +1375,7 @@ CMathParser::MathResult CMathParser::ParseMethodParameters(
         {
             if (IsNativeMethod(sBuf))
             {
-                double* pOutParameters = NULL;
+                double *pOutParameters = NULL;
                 int iParameterCount = 0;
 
                 double dProcValue = 0;
@@ -1383,7 +1409,6 @@ CMathParser::MathResult CMathParser::ParseMethodParameters(
 
         if (sSource[iRPos] == ',')
         {
-
         }
         else if (iParenNestLevel > 0)
         {
@@ -1392,7 +1417,7 @@ CMathParser::MathResult CMathParser::ParseMethodParameters(
 
         if (iParenNestLevel == 0 || sSource[iRPos] == ',')
         {
-            *pOutParameters = (double*)realloc(*pOutParameters, sizeof(double) * (iParameters + 1));
+            *pOutParameters = (double *)realloc(*pOutParameters, sizeof(double) * (iParameters + 1));
 
             sBuf[iWPos] = '\0';
             double dResult = 0;
@@ -1428,7 +1453,7 @@ CMathParser::MathResult CMathParser::ParseMethodParameters(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::CalculateComplexExpression(MATHINSTANCE* pInst)
+CMathParser::MathResult CMathParser::CalculateComplexExpression(MATHINSTANCE *pInst)
 {
     char sVal[_CVTBUFSIZE];
 
@@ -1447,8 +1472,9 @@ CMathParser::MathResult CMathParser::CalculateComplexExpression(MATHINSTANCE* pI
         return this->SetError(ResultParenthesesMismatch, "Parentheses mismatch.");
     }
 
-    SubExpr.Allocated = pInst->Expression.Length;;
-    SubExpr.Text = (char*)calloc(sizeof(char), SubExpr.Allocated);
+    SubExpr.Allocated = pInst->Expression.Length;
+    ;
+    SubExpr.Text = (char *)calloc(sizeof(char), SubExpr.Allocated);
     if (!SubExpr.Text)
     {
         free(pInst->Expression.Text);
@@ -1464,7 +1490,7 @@ CMathParser::MathResult CMathParser::CalculateComplexExpression(MATHINSTANCE* pI
             if (SubExpr.Length >= SubExpr.Allocated)
             {
                 SubExpr.Allocated = ((iEnd - iBegin) - 2) + 1;
-                SubExpr.Text = (char*)realloc(SubExpr.Text, SubExpr.Allocated);
+                SubExpr.Text = (char *)realloc(SubExpr.Text, SubExpr.Allocated);
             }
 
             memcpy_s(SubExpr.Text, SubExpr.Allocated, pInst->Expression.Text + (iBegin + 1), SubExpr.Length);
@@ -1494,7 +1520,8 @@ CMathParser::MathResult CMathParser::CalculateComplexExpression(MATHINSTANCE* pI
                     break;
                 }
             }
-            else {
+            else
+            {
                 sprintf_s(sVal, sizeof(sVal), "%.*g", this->ciPrecision, pInst->RunningTotal);
                 /*
                 if(_gcvt_s(sVal, sizeof(sVal), pInst->RunningTotal, this->ciPrecision) != 0)
@@ -1518,7 +1545,8 @@ CMathParser::MathResult CMathParser::CalculateComplexExpression(MATHINSTANCE* pI
                 break;
             }
         }
-        else {
+        else
+        {
             ErrorCode = this->CalculateSimpleExpression(pInst, &pInst->Expression);
             break;
         }
@@ -1531,7 +1559,7 @@ CMathParser::MathResult CMathParser::CalculateComplexExpression(MATHINSTANCE* pI
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::GetSubExpression(MATHINSTANCE* pInst, int* iBegin, int* iEnd)
+CMathParser::MathResult CMathParser::GetSubExpression(MATHINSTANCE *pInst, int *iBegin, int *iEnd)
 {
     int iIn = 0;
     int iOut = 0;
@@ -1587,7 +1615,7 @@ CMathParser::MathResult CMathParser::GetSubExpression(MATHINSTANCE* pInst, int* 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::ReplaceValue(MATHEXPRESSION* pExp, int iBegin, int iEnd, const char* sWith, int iWithSz)
+CMathParser::MathResult CMathParser::ReplaceValue(MATHEXPRESSION *pExp, int iBegin, int iEnd, const char *sWith, int iWithSz)
 {
     int iPos = 0;
     int iNewSz = pExp->Length + (iWithSz - (iEnd - iBegin));
@@ -1598,7 +1626,7 @@ CMathParser::MathResult CMathParser::ReplaceValue(MATHEXPRESSION* pExp, int iBeg
     if (iNewSz >= pExp->Allocated)
     {
         pExp->Allocated = iNewSz + 1;
-        pExp->Text = (char*)realloc(pExp->Text, pExp->Allocated);
+        pExp->Text = (char *)realloc(pExp->Text, pExp->Allocated);
     }
 
     if (iGapSize < 0)
@@ -1622,7 +1650,8 @@ CMathParser::MathResult CMathParser::ReplaceValue(MATHEXPRESSION* pExp, int iBeg
 
         pExp->Text[iPos] = '\0';
     }
-    else {
+    else
+    {
         memcpy(pExp->Text + iBegin, sWith, iWithSz);
     }
 
@@ -1631,46 +1660,49 @@ CMathParser::MathResult CMathParser::ReplaceValue(MATHEXPRESSION* pExp, int iBeg
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool CMathParser::IsIntegerExclusive(const char* sOperator)
+bool CMathParser::IsIntegerExclusive(const char *sOperator)
 {
-    if (strcmp(sOperator, "&") == 0) {
+    if (strcmp(sOperator, "&") == 0)
+    {
         return true;
     }
-    else if (strcmp(sOperator, "|") == 0) {
+    else if (strcmp(sOperator, "|") == 0)
+    {
         return true;
     }
-    else if (strcmp(sOperator, "^") == 0) {
+    else if (strcmp(sOperator, "^") == 0)
+    {
         return true;
     }
-    else if (strcmp(sOperator, "&=") == 0) {
+    else if (strcmp(sOperator, "&=") == 0)
+    {
         return true;
     }
-    else if (strcmp(sOperator, "|=") == 0) {
+    else if (strcmp(sOperator, "|=") == 0)
+    {
         return true;
     }
-    else if (strcmp(sOperator, "^=") == 0) {
+    else if (strcmp(sOperator, "^=") == 0)
+    {
         return true;
     }
-    else if (strcmp(sOperator, "<<") == 0) {
+    else if (strcmp(sOperator, "<<") == 0)
+    {
         return true;
     }
-    else if (strcmp(sOperator, ">>") == 0) {
+    else if (strcmp(sOperator, ">>") == 0)
+    {
         return true;
     }
-    else return false;
+    else
+        return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool CMathParser::IsMathChar(const char cChar)
 {
-    return(cChar == '*' || cChar == '/'
-        || cChar == '+' || cChar == '-'
-        || cChar == '>' || cChar == '<'
-        || cChar == '!' || cChar == '='
-        || cChar == '&' || cChar == '|'
-        || cChar == '^' || cChar == '%'
-        || cChar == '~');
+    return (cChar == '*' || cChar == '/' || cChar == '+' || cChar == '-' || cChar == '>' || cChar == '<' || cChar == '!' || cChar == '=' || cChar == '&' || cChar == '|' || cChar == '^' || cChar == '%' || cChar == '~');
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1684,15 +1716,12 @@ bool CMathParser::IsValidChar(const char cChar)
 
 bool CMathParser::IsValidVariableChar(const char cChar)
 {
-    return IsNumeric(cChar)
-        || (cChar >= 'a' && cChar <= 'z')
-        || (cChar >= 'A' && cChar <= 'Z')
-        || cChar == '_';
+    return IsNumeric(cChar) || (cChar >= 'a' && cChar <= 'z') || (cChar >= 'A' && cChar <= 'Z') || cChar == '_';
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::PerformBooleanOperation(MATHINSTANCE* pInst, int iVal, const char* sOpr)
+CMathParser::MathResult CMathParser::PerformBooleanOperation(MATHINSTANCE *pInst, int iVal, const char *sOpr)
 {
     if (strcmp(sOpr, "!") == 0)
     {
@@ -1707,7 +1736,7 @@ CMathParser::MathResult CMathParser::PerformBooleanOperation(MATHINSTANCE* pInst
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::PerformIntOperation(MATHINSTANCE* pInst, int iVal1, const char* sOpr, int iVal2)
+CMathParser::MathResult CMathParser::PerformIntOperation(MATHINSTANCE *pInst, int iVal1, const char *sOpr, int iVal2)
 {
     if (strcmp(sOpr, "&&") == 0)
         pInst->RunningTotal = (iVal1 && iVal2);
@@ -1733,7 +1762,8 @@ CMathParser::MathResult CMathParser::PerformIntOperation(MATHINSTANCE* pInst, in
         pInst->RunningTotal = (iVal1 << iVal2);
     else if (strcmp(sOpr, ">>") == 0)
         pInst->RunningTotal = (iVal1 >> iVal2);
-    else {
+    else
+    {
         return this->SetError(ResultInvalidOperator, "Invalid operator: %s.", sOpr);
     }
 
@@ -1742,7 +1772,7 @@ CMathParser::MathResult CMathParser::PerformIntOperation(MATHINSTANCE* pInst, in
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::PerformDoubleOperation(MATHINSTANCE* pInst, double dVal1, const char* sOpr, double dVal2)
+CMathParser::MathResult CMathParser::PerformDoubleOperation(MATHINSTANCE *pInst, double dVal1, const char *sOpr, double dVal2)
 {
     double dResult = 0;
 
@@ -1790,7 +1820,8 @@ CMathParser::MathResult CMathParser::PerformDoubleOperation(MATHINSTANCE* pInst,
         }
         dResult = fmod(dVal1, dVal2);
     }
-    else {
+    else
+    {
         return this->SetError(ResultInvalidOperator, "Invalid operator: %s.", sOpr);
     }
 
@@ -1799,14 +1830,15 @@ CMathParser::MathResult CMathParser::PerformDoubleOperation(MATHINSTANCE* pInst,
         pInst->RunningTotal = dResult;
         return ResultOk;
     }
-    else {
+    else
+    {
         return this->SetError(ResultInfiniteOrNotANumber, "Result of %s is infinite or not a number.", sOpr);
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::Calculate(const char* sExpression, int iExpressionSz, double* dResult)
+CMathParser::MathResult CMathParser::Calculate(const char *sExpression, int iExpressionSz, double *dResult)
 {
     if (this->cbDebugMode)
     {
@@ -1816,7 +1848,8 @@ CMathParser::MathResult CMathParser::Calculate(const char* sExpression, int iExp
             sprintf_s(sDebugMath, sizeof(sDebugMath), "\"%s\" = {\n", sExpression);
             this->pDebugProc(this, sDebugMath);
         }
-        else {
+        else
+        {
             printf("(%s) = {\n", sExpression);
         }
     }
@@ -1847,7 +1880,8 @@ CMathParser::MathResult CMathParser::Calculate(const char* sExpression, int iExp
         {
             this->pDebugProc(this, sDebugMath);
         }
-        else {
+        else
+        {
             printf("%s", sDebugMath);
         }
     }
@@ -1857,14 +1891,14 @@ CMathParser::MathResult CMathParser::Calculate(const char* sExpression, int iExp
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::Calculate(const char* sExpression, double* dResult)
+CMathParser::MathResult CMathParser::Calculate(const char *sExpression, double *dResult)
 {
     return this->Calculate(sExpression, (int)strlen(sExpression), dResult);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::Calculate(const char* sExpression, int iExpressionSz, unsigned int* iResult)
+CMathParser::MathResult CMathParser::Calculate(const char *sExpression, int iExpressionSz, unsigned int *iResult)
 {
     if (this->cbDebugMode)
     {
@@ -1874,7 +1908,8 @@ CMathParser::MathResult CMathParser::Calculate(const char* sExpression, int iExp
             sprintf_s(sDebugMath, sizeof(sDebugMath), "\"%s\" = {\n", sExpression);
             this->pDebugProc(this, sDebugMath);
         }
-        else {
+        else
+        {
             printf("(%s) = {\n", sExpression);
         }
     }
@@ -1906,7 +1941,8 @@ CMathParser::MathResult CMathParser::Calculate(const char* sExpression, int iExp
         {
             this->pDebugProc(this, sDebugMath);
         }
-        else {
+        else
+        {
             printf("%s", sDebugMath);
         }
     }
@@ -1916,14 +1952,14 @@ CMathParser::MathResult CMathParser::Calculate(const char* sExpression, int iExp
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::Calculate(const char* sExpression, unsigned int* iResult)
+CMathParser::MathResult CMathParser::Calculate(const char *sExpression, unsigned int *iResult)
 {
     return this->Calculate(sExpression, (int)strlen(sExpression), iResult);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::Calculate(const char* sExpression, int iExpressionSz, int* iResult)
+CMathParser::MathResult CMathParser::Calculate(const char *sExpression, int iExpressionSz, int *iResult)
 {
     if (this->cbDebugMode)
     {
@@ -1933,7 +1969,8 @@ CMathParser::MathResult CMathParser::Calculate(const char* sExpression, int iExp
             sprintf_s(sDebugMath, sizeof(sDebugMath), "\"%s\" = {\n", sExpression);
             this->pDebugProc(this, sDebugMath);
         }
-        else {
+        else
+        {
             printf("(%s) = {\n", sExpression);
         }
     }
@@ -1964,7 +2001,8 @@ CMathParser::MathResult CMathParser::Calculate(const char* sExpression, int iExp
         {
             this->pDebugProc(this, sDebugMath);
         }
-        else {
+        else
+        {
             printf("%s", sDebugMath);
         }
     }
@@ -1974,7 +2012,7 @@ CMathParser::MathResult CMathParser::Calculate(const char* sExpression, int iExp
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::Calculate(const char* sExpression, int* iResult)
+CMathParser::MathResult CMathParser::Calculate(const char *sExpression, int *iResult)
 {
     return this->Calculate(sExpression, (int)strlen(sExpression), iResult);
 }
@@ -2101,14 +2139,14 @@ bool CMathParser::DebugMode(void)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MATHERRORINFO* CMathParser::LastError(void)
+CMathParser::MATHERRORINFO *CMathParser::LastError(void)
 {
     return &this->LastErrorInfo;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CMathParser::MathResult CMathParser::SetError(MathResult ErrorCode, const char* sFormat, ...)
+CMathParser::MathResult CMathParser::SetError(MathResult ErrorCode, const char *sFormat, ...)
 {
     va_list ArgList;
     va_start(ArgList, sFormat);
@@ -2124,7 +2162,7 @@ CMathParser::MathResult CMathParser::SetError(MathResult ErrorCode, const char* 
         this->LastErrorInfo.Error = ResultOk;
     }
 
-    this->LastErrorInfo.Text = (char*)calloc(sizeof(char), iMemoryRequired);
+    this->LastErrorInfo.Text = (char *)calloc(sizeof(char), iMemoryRequired);
 
     _vsprintf_s_l(this->LastErrorInfo.Text, iMemoryRequired, sFormat, NULL, ArgList);
     va_end(ArgList);
@@ -2138,7 +2176,8 @@ CMathParser::MathResult CMathParser::SetError(MathResult ErrorCode, const char* 
         {
             this->pDebugProc(this, sDebugMath);
         }
-        else {
+        else
+        {
             printf("%s", sDebugMath);
         }
     }
@@ -2147,10 +2186,10 @@ CMathParser::MathResult CMathParser::SetError(MathResult ErrorCode, const char* 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool CMathParser::ReverseString(char* sBuf, int iBufSz)
+bool CMathParser::ReverseString(char *sBuf, int iBufSz)
 {
-    char* String1 = NULL;
-    char* String2 = NULL;
+    char *String1 = NULL;
+    char *String2 = NULL;
 
     if (!sBuf || !*sBuf)
     {
@@ -2187,7 +2226,7 @@ bool CMathParser::IsNumeric(const char cIn)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool CMathParser::IsNumeric(const char* sText, int iLength)
+bool CMathParser::IsNumeric(const char *sText, int iLength)
 {
     int iRPos = 0;
     bool bHasDecimal = false;
@@ -2217,14 +2256,14 @@ bool CMathParser::IsNumeric(const char* sText, int iLength)
                     return false;
                 }
 
-
                 if (bHasDecimal)
                 {
                     return false;
                 }
                 bHasDecimal = true;
             }
-            else {
+            else
+            {
                 return false;
             }
         }
@@ -2235,14 +2274,14 @@ bool CMathParser::IsNumeric(const char* sText, int iLength)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool CMathParser::IsNumeric(const char* sText)
+bool CMathParser::IsNumeric(const char *sText)
 {
     return IsNumeric(sText, (int)strlen(sText));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int CMathParser::InStr(const char* sSearchFor, const char* sInBuf, const int iBufSz, const int iStartPos)
+int CMathParser::InStr(const char *sSearchFor, const char *sInBuf, const int iBufSz, const int iStartPos)
 {
     int iLookingLoop = 0;
 
@@ -2266,7 +2305,8 @@ int CMathParser::InStr(const char* sSearchFor, const char* sInBuf, const int iBu
                 {
                     iLookingLoop++;
                 }
-                else iLookingLoop = sSearchForSz + 1;
+                else
+                    iLookingLoop = sSearchForSz + 1;
 
                 if (iLookingLoop == sSearchForSz)
                 {
