@@ -149,25 +149,11 @@ void MainWindow::plotting(int numberFile)
     ui->potWidget->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom)); // period as decimal separator and comma as thousand separator
     ui->potWidget->legend->setVisible(true);
 
-    ui->potWidget->addGraph(ui->potWidget->yAxis2, ui->potWidget->xAxis2);
-    // ui->potWidget->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
-
     QFont legendFont = font();  // start out with MainWindow's font..
     legendFont.setPointSize(9); // and make a bit smaller for legend
-    ui->potWidget->legend->setFont(legendFont);
-    ui->potWidget->legend->setBrush(QBrush(QColor(255, 255, 255, 1)));
-
-    //ui->potWidget->addGraph(ui->potWidget->yAxis2, ui->potWidget->xAxis2);
-    ui->potWidget->graph(0)->setPen(QColor(50, 50, 50, 255));
-    // ui->potWidget->graph(0)->setLineStyle(QCPGraph::lsNone);
-
-    // generate data, just playing with numbers, not much to learn here:
+    ui->potWidget->addGraph();
+    ui->potWidget->graph(0)->setPen(QPen(Qt::black)); // line color blue for first graph
     QVector<std::pair<double, double>> points;
-
-    double minX = DBL_MAX;
-    double maxX = DBL_MIN;
-    double minY = DBL_MAX;
-    double maxY = DBL_MIN;
 
     auto readFile = [&](std::string fileName) {
         for (std::ifstream in(fileName); !in.eof();)
@@ -181,21 +167,9 @@ void MainWindow::plotting(int numberFile)
                 std::getline(ss, item, ' ');
                 
                 double x = std::stod(item);
-
-                if (x < minX)
-                    minX = x;
-                else if (x > maxX)
-                    maxX = x;
-
                 std::getline(ss, item, ' ');
                 double y = std::stod(item);
-
-                if (y < minY)
-                    minY = y;
-                else if (y > maxY)
-                    maxY = y;
-                
-                points.push_back({y,x});
+                points.push_back({x,y});
             }
         }
     };
@@ -204,14 +178,14 @@ void MainWindow::plotting(int numberFile)
         {
              readFile("..//.//QtExample\\Step1\\file"+std::to_string(index)+".txt");
         }
-
+/*
     auto comparator = [](const std::pair<double, double>& point1, const std::pair<double, double>& point2)
     {
         return point1.first < point2.first;
     };
 
     qSort(points.begin(), points.end(), comparator);
-
+*/
     QVector<double> xVector;
     QVector<double> yVector;
 
@@ -220,22 +194,25 @@ void MainWindow::plotting(int numberFile)
         xVector.push_back(std::move(item.first));
         yVector.push_back(std::move(item.second));
     }
+
+    ui->potWidget->xAxis2->setVisible(true);
+    ui->potWidget->xAxis2->setTickLabels(false);
+    ui->potWidget->yAxis2->setVisible(true);
+    ui->potWidget->yAxis2->setTickLabels(false);
+    // make left and bottom axes always transfer their ranges to right and top axes:
+    connect(ui->potWidget->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->potWidget->xAxis2, SLOT(setRange(QCPRange)));
+    connect(ui->potWidget->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->potWidget->yAxis2, SLOT(setRange(QCPRange)));
     // pass data points to graphs:
     ui->potWidget->graph(0)->setData(xVector, yVector);
     // activate top and right axes, which are invisible by default:
-    ui->potWidget->xAxis2->setVisible(true);
-    ui->potWidget->yAxis2->setVisible(true);
+    ui->potWidget->graph(0)->rescaleAxes();
     // set ranges appropriate to show data:
-    ui->potWidget->xAxis->setRange(minX - PADDING, maxX + PADDING);
-    ui->potWidget->xAxis2->setRange(minX - PADDING, maxX + PADDING);
-    ui->potWidget->yAxis->setRange(minY - PADDING, maxY + PADDING);
-    ui->potWidget->yAxis2->setRange(minY - PADDING, maxY + PADDING);
     // set labels:
     ui->potWidget->xAxis->setLabel("Bottom axis with outward ticks");
     ui->potWidget->yAxis->setLabel("Left axis label");
     ui->potWidget->xAxis2->setLabel("Top axis label");
     ui->potWidget->yAxis2->setLabel("Right axis label");
-
+    ui->potWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
     ui->potWidget->replot();
 }
 
@@ -262,7 +239,7 @@ void MainWindow::generateKthTerms(CMathParser &parser)
 
 void MainWindow::SelectButtonStep1()
 {
-    int numberPoint = 10000;
+    int numberPoint = 100;
         int numberThread;
         if(std::thread::hardware_concurrency()>0) numberThread=std::thread::hardware_concurrency();
         else numberThread=4;
