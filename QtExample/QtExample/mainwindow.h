@@ -3,7 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QIntValidator>
 #include <QVector2D>
-
+//#include <QtAlgorithms>
 #include "CMathParser.h"
 #include "ui_mainwindow.h"
 
