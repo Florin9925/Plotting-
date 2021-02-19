@@ -32,8 +32,6 @@ public:
     QWidget *centralWidget;
     QPushButton *pushButtonStep1;
     QPushButton *pushButtonStep2;
-    QLineEdit *lineEditN;
-    QLabel *labelN;
     QLabel *labelXn;
     QLineEdit *lineEditXn;
     QLabel *labelYn;
@@ -57,7 +55,11 @@ public:
     QPushButton *pushButtonAddPoints;
     QPushButton *pushButtonDefaultStep1;
     QPushButton *pushButtonDefaultStep2;
-    QLineEdit *lineEditTest;
+    QLineEdit *lineEditReadXML;
+    QPushButton *pushButtonReadXML;
+    QPushButton *pushButtonClean;
+    QLineEdit *lineEditInitialPoints;
+    QLabel *labelInitialPoints;
     QMenuBar *menuBar;
     QMenu *menuExit;
     QStatusBar *statusBar;
@@ -85,7 +87,7 @@ public:
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         pushButtonStep1 = new QPushButton(centralWidget);
         pushButtonStep1->setObjectName(QString::fromUtf8("pushButtonStep1"));
-        pushButtonStep1->setGeometry(QRect(100, 340, 121, 41));
+        pushButtonStep1->setGeometry(QRect(90, 320, 121, 41));
         QFont font1;
         font1.setFamily(QString::fromUtf8("Century Gothic"));
         font1.setPointSize(10);
@@ -100,62 +102,51 @@ public:
 "background:#148dfa;"));
         pushButtonStep2 = new QPushButton(centralWidget);
         pushButtonStep2->setObjectName(QString::fromUtf8("pushButtonStep2"));
-        pushButtonStep2->setGeometry(QRect(100, 520, 121, 41));
+        pushButtonStep2->setGeometry(QRect(100, 570, 121, 41));
         pushButtonStep2->setFont(font1);
         pushButtonStep2->setCursor(QCursor(Qt::PointingHandCursor));
         pushButtonStep2->setStyleSheet(QString::fromUtf8("border-radius: 10px;;\n"
 "font: 10pt  \"Century Gothic\";\n"
 "color:#19232D;\n"
 "background:#148dfa;"));
-        lineEditN = new QLineEdit(centralWidget);
-        lineEditN->setObjectName(QString::fromUtf8("lineEditN"));
-        lineEditN->setGeometry(QRect(120, 20, 71, 31));
-        lineEditN->setStyleSheet(QString::fromUtf8("border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 10px;\n"
-"border-color: rgb(181, 204, 214);"));
-        labelN = new QLabel(centralWidget);
-        labelN->setObjectName(QString::fromUtf8("labelN"));
-        labelN->setGeometry(QRect(70, 20, 41, 31));
-        QFont font2;
-        font2.setPointSize(18);
-        labelN->setFont(font2);
         labelXn = new QLabel(centralWidget);
         labelXn->setObjectName(QString::fromUtf8("labelXn"));
-        labelXn->setGeometry(QRect(60, 70, 51, 31));
+        labelXn->setGeometry(QRect(60, 20, 51, 31));
+        QFont font2;
+        font2.setPointSize(18);
         labelXn->setFont(font2);
         lineEditXn = new QLineEdit(centralWidget);
         lineEditXn->setObjectName(QString::fromUtf8("lineEditXn"));
-        lineEditXn->setGeometry(QRect(120, 70, 321, 31));
+        lineEditXn->setGeometry(QRect(120, 20, 321, 31));
         lineEditXn->setStyleSheet(QString::fromUtf8("border-style: outset;\n"
 "border-width: 1px;\n"
 "border-radius: 10px;\n"
 "border-color: rgb(181, 204, 214);"));
         labelYn = new QLabel(centralWidget);
         labelYn->setObjectName(QString::fromUtf8("labelYn"));
-        labelYn->setGeometry(QRect(60, 120, 51, 31));
+        labelYn->setGeometry(QRect(60, 70, 51, 31));
         labelYn->setFont(font2);
         lineEditYn = new QLineEdit(centralWidget);
         lineEditYn->setObjectName(QString::fromUtf8("lineEditYn"));
-        lineEditYn->setGeometry(QRect(120, 120, 321, 31));
+        lineEditYn->setGeometry(QRect(120, 70, 321, 31));
         lineEditYn->setStyleSheet(QString::fromUtf8("border-style: outset;\n"
 "border-width: 1px;\n"
 "border-radius: 10px;\n"
 "border-color: rgb(181, 204, 214);"));
         labelFn = new QLabel(centralWidget);
         labelFn->setObjectName(QString::fromUtf8("labelFn"));
-        labelFn->setGeometry(QRect(10, 170, 101, 31));
+        labelFn->setGeometry(QRect(10, 120, 101, 31));
         labelFn->setFont(font2);
         lineEditFx = new QLineEdit(centralWidget);
         lineEditFx->setObjectName(QString::fromUtf8("lineEditFx"));
-        lineEditFx->setGeometry(QRect(120, 170, 441, 31));
+        lineEditFx->setGeometry(QRect(120, 120, 441, 31));
         lineEditFx->setStyleSheet(QString::fromUtf8("border-style: outset;\n"
 "border-width: 1px;\n"
 "border-radius: 10px;\n"
 "border-color: rgb(181, 204, 214);"));
         lineEditFy = new QLineEdit(centralWidget);
         lineEditFy->setObjectName(QString::fromUtf8("lineEditFy"));
-        lineEditFy->setGeometry(QRect(590, 170, 441, 31));
+        lineEditFy->setGeometry(QRect(590, 120, 441, 31));
         lineEditFy->setStyleSheet(QString::fromUtf8("border-style: outset;\n"
 "border-width: 1px;\n"
 "border-radius: 10px;\n"
@@ -163,7 +154,7 @@ public:
         label_5 = new QLabel(centralWidget);
         label_5->setObjectName(QString::fromUtf8("label_5"));
         label_5->setEnabled(true);
-        label_5->setGeometry(QRect(570, 180, 16, 21));
+        label_5->setGeometry(QRect(570, 130, 16, 21));
         potWidget = new QCustomPlot(centralWidget);
         potWidget->setObjectName(QString::fromUtf8("potWidget"));
         potWidget->setGeometry(QRect(330, 320, 1191, 511));
@@ -228,14 +219,14 @@ public:
         labelML->setFont(font2);
         lineEditAddPoints = new QLineEdit(centralWidget);
         lineEditAddPoints->setObjectName(QString::fromUtf8("lineEditAddPoints"));
-        lineEditAddPoints->setGeometry(QRect(170, 420, 101, 41));
+        lineEditAddPoints->setGeometry(QRect(170, 470, 101, 41));
         lineEditAddPoints->setStyleSheet(QString::fromUtf8("border-style: outset;\n"
 "border-width: 1px;\n"
 "border-radius: 10px;\n"
 "border-color: rgb(181, 204, 214);"));
         pushButtonAddPoints = new QPushButton(centralWidget);
         pushButtonAddPoints->setObjectName(QString::fromUtf8("pushButtonAddPoints"));
-        pushButtonAddPoints->setGeometry(QRect(40, 420, 121, 41));
+        pushButtonAddPoints->setGeometry(QRect(40, 470, 121, 41));
         pushButtonAddPoints->setFont(font1);
         pushButtonAddPoints->setCursor(QCursor(Qt::PointingHandCursor));
         pushButtonAddPoints->setStyleSheet(QString::fromUtf8("border-radius: 10px;;\n"
@@ -244,7 +235,7 @@ public:
 "background:#148dfa;"));
         pushButtonDefaultStep1 = new QPushButton(centralWidget);
         pushButtonDefaultStep1->setObjectName(QString::fromUtf8("pushButtonDefaultStep1"));
-        pushButtonDefaultStep1->setGeometry(QRect(480, 0, 161, 31));
+        pushButtonDefaultStep1->setGeometry(QRect(530, 30, 161, 31));
         pushButtonDefaultStep1->setFont(font1);
         pushButtonDefaultStep1->setCursor(QCursor(Qt::PointingHandCursor));
         pushButtonDefaultStep1->setStyleSheet(QString::fromUtf8("border-radius: 10px;;\n"
@@ -253,20 +244,52 @@ public:
 "background:#148dfa;"));
         pushButtonDefaultStep2 = new QPushButton(centralWidget);
         pushButtonDefaultStep2->setObjectName(QString::fromUtf8("pushButtonDefaultStep2"));
-        pushButtonDefaultStep2->setGeometry(QRect(690, 0, 161, 31));
+        pushButtonDefaultStep2->setGeometry(QRect(780, 30, 161, 31));
         pushButtonDefaultStep2->setFont(font1);
         pushButtonDefaultStep2->setCursor(QCursor(Qt::PointingHandCursor));
         pushButtonDefaultStep2->setStyleSheet(QString::fromUtf8("border-radius: 10px;;\n"
 "font: 10pt  \"Century Gothic\";\n"
 "color:#19232D;\n"
 "background:#148dfa;"));
-        lineEditTest = new QLineEdit(centralWidget);
-        lineEditTest->setObjectName(QString::fromUtf8("lineEditTest"));
-        lineEditTest->setGeometry(QRect(70, 640, 201, 91));
-        lineEditTest->setStyleSheet(QString::fromUtf8("border-style: outset;\n"
+        lineEditReadXML = new QLineEdit(centralWidget);
+        lineEditReadXML->setObjectName(QString::fromUtf8("lineEditReadXML"));
+        lineEditReadXML->setGeometry(QRect(210, 200, 661, 31));
+        lineEditReadXML->setStyleSheet(QString::fromUtf8("border-style: outset;\n"
 "border-width: 1px;\n"
 "border-radius: 10px;\n"
 "border-color: rgb(181, 204, 214);"));
+        lineEditReadXML->setReadOnly(true);
+        pushButtonReadXML = new QPushButton(centralWidget);
+        pushButtonReadXML->setObjectName(QString::fromUtf8("pushButtonReadXML"));
+        pushButtonReadXML->setGeometry(QRect(20, 200, 161, 31));
+        pushButtonReadXML->setFont(font1);
+        pushButtonReadXML->setCursor(QCursor(Qt::PointingHandCursor));
+        pushButtonReadXML->setStyleSheet(QString::fromUtf8("border-radius: 10px;;\n"
+"font: 10pt  \"Century Gothic\";\n"
+"color:#19232D;\n"
+"background:#148dfa;"));
+        pushButtonClean = new QPushButton(centralWidget);
+        pushButtonClean->setObjectName(QString::fromUtf8("pushButtonClean"));
+        pushButtonClean->setGeometry(QRect(1470, 110, 101, 31));
+        pushButtonClean->setFont(font1);
+        pushButtonClean->setCursor(QCursor(Qt::PointingHandCursor));
+        pushButtonClean->setStyleSheet(QString::fromUtf8("border-radius: 10px;;\n"
+"font: 10pt  \"Century Gothic\";\n"
+"color:#19232D;\n"
+"background:#148dfa;"));
+        lineEditInitialPoints = new QLineEdit(centralWidget);
+        lineEditInitialPoints->setObjectName(QString::fromUtf8("lineEditInitialPoints"));
+        lineEditInitialPoints->setGeometry(QRect(170, 390, 101, 41));
+        lineEditInitialPoints->setStyleSheet(QString::fromUtf8("border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 10px;\n"
+"border-color: rgb(181, 204, 214);"));
+        labelInitialPoints = new QLabel(centralWidget);
+        labelInitialPoints->setObjectName(QString::fromUtf8("labelInitialPoints"));
+        labelInitialPoints->setGeometry(QRect(30, 390, 111, 31));
+        QFont font3;
+        font3.setPointSize(14);
+        labelInitialPoints->setFont(font3);
         MainWindowClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindowClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -294,30 +317,32 @@ public:
         actionHelp->setText(QApplication::translate("MainWindowClass", "Help", nullptr));
         pushButtonStep1->setText(QApplication::translate("MainWindowClass", "Step1", nullptr));
         pushButtonStep2->setText(QApplication::translate("MainWindowClass", "Step2", nullptr));
-        lineEditN->setText(QApplication::translate("MainWindowClass", "1", nullptr));
-        labelN->setText(QApplication::translate("MainWindowClass", "n =", nullptr));
         labelXn->setText(QApplication::translate("MainWindowClass", "Xn =", nullptr));
-        lineEditXn->setText(QApplication::translate("MainWindowClass", "SQRT(n)/(1+SQRT(n))", nullptr));
+        lineEditXn->setText(QString());
         labelYn->setText(QApplication::translate("MainWindowClass", "Yn =", nullptr));
-        lineEditYn->setText(QApplication::translate("MainWindowClass", "SIN(n)/SQRT(1+n)", nullptr));
+        lineEditYn->setText(QString());
         labelFn->setText(QApplication::translate("MainWindowClass", "Fn(x,y) =", nullptr));
-        lineEditFx->setText(QApplication::translate("MainWindowClass", "(((XN)-(XN-1))*X+b*(XN-1)-a*(XN))/(b-a)", nullptr));
-        lineEditFy->setText(QApplication::translate("MainWindowClass", "((YN)-(YN-1)-(DN)*((M)-m))*X/(b-a)+(DN)*Y+(b*(YN-1)-a*(YN)-(DN)*(b*m-a*(M)))/(b-a)", nullptr));
+        lineEditFx->setText(QString());
+        lineEditFy->setText(QString());
         label_5->setText(QApplication::translate("MainWindowClass", ",", nullptr));
-        lineEditA->setText(QApplication::translate("MainWindowClass", "0", nullptr));
-        lineEditMU->setText(QApplication::translate("MainWindowClass", "0", nullptr));
-        lineEditML->setText(QApplication::translate("MainWindowClass", "0", nullptr));
+        lineEditA->setText(QString());
+        lineEditMU->setText(QString());
+        lineEditML->setText(QString());
         labelB->setText(QApplication::translate("MainWindowClass", "b =", nullptr));
         labelMU->setText(QApplication::translate("MainWindowClass", "M =", nullptr));
-        lineEditB->setText(QApplication::translate("MainWindowClass", "1", nullptr));
+        lineEditB->setText(QString());
         labelDN->setText(QApplication::translate("MainWindowClass", "dn =", nullptr));
         labelA->setText(QApplication::translate("MainWindowClass", "a =", nullptr));
-        lineEditDN->setText(QApplication::translate("MainWindowClass", "0.4", nullptr));
+        lineEditDN->setText(QString());
         labelML->setText(QApplication::translate("MainWindowClass", "m =", nullptr));
         lineEditAddPoints->setText(QString());
         pushButtonAddPoints->setText(QApplication::translate("MainWindowClass", "Add points", nullptr));
         pushButtonDefaultStep1->setText(QApplication::translate("MainWindowClass", "Default step1", nullptr));
         pushButtonDefaultStep2->setText(QApplication::translate("MainWindowClass", "Default step2", nullptr));
+        pushButtonReadXML->setText(QApplication::translate("MainWindowClass", "Read XML", nullptr));
+        pushButtonClean->setText(QApplication::translate("MainWindowClass", "Clean", nullptr));
+        lineEditInitialPoints->setText(QApplication::translate("MainWindowClass", "100", nullptr));
+        labelInitialPoints->setText(QApplication::translate("MainWindowClass", "Initial points:", nullptr));
         menuExit->setTitle(QApplication::translate("MainWindowClass", "File", nullptr));
     } // retranslateUi
 

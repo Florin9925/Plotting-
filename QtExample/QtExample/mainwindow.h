@@ -3,7 +3,8 @@
 #include <QtWidgets/QMainWindow>
 #include <QIntValidator>
 #include <QVector2D>
-//#include <QtAlgorithms>
+#include<QtXml/QDomDocument>
+#include <QFile>
 #include "CMathParser.h"
 #include "ui_mainwindow.h"
 
@@ -21,42 +22,48 @@ static const double PADDING = 0.2;
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 private:
-    double x0;
-    double y0;
+	double x0;
+	double y0;
 
 public:
-    MainWindow(std::unique_ptr<QWidget> parent = Q_NULLPTR);
-    ~MainWindow();
+	MainWindow(std::unique_ptr<QWidget> parent = Q_NULLPTR);
+	~MainWindow();
 
 private slots:
-    void SelectButtonStep1();
-    void SelectButtonStep2();
-    void AddPointsButton();
-    void DefaultStep1();
-    void DefaultStep2();
-    void ActionExit();
+	void SelectButtonStep1();
+	void SelectButtonStep2();
+	void AddPointsButton();
+	void DefaultStep1();
+	void DefaultStep2();
+	void Clean();
+	void ReadXML();
+	void ActionExit();
 
 private:
-    std::array<double, 101> xK;
-    std::array<double, 101> yK;
+	std::array<double, 101> xK;
+	std::array<double, 101> yK;
 
-    std::string replaceConstant(const std::string &input, const std::string &token, const std::string &token_value);
-    void replaceConstant(std::string &input, const std::unordered_map<std::string, std::string> &tokens);
-    void replaceFunction(std::string &line);
-    void replaceSerie(std::string &line, uint8_t k, double x, double y);
-    double calculateExpression(CMathParser &mathParser, const std::string &line);
-    double generateKthTerm(CMathParser &mathParser, const QString &line, uint8_t k);
-    void generateKthTerms(CMathParser &parser);
-    double generateFComp(CMathParser &mathParser, std::string &lineToEdit, double xComp_k, double xComp_k1, double yComp_k, double yComp_k1, double x, double y, uint8_t k);
-    QCPGraphData generateFk(CMathParser &mathParser, uint8_t k, double x, double y, std::string &fX, std::string &fY);
-    QCPGraphData generate2DPoints(CMathParser &mathParser, std::string &fX, std::string &fY, const double& x, const double& y);
-    void plotting(int numberFile);
-    bool CheckConstraintN();
+	std::string replaceConstant(const std::string& input, const std::string& token, const std::string& token_value);
+	void replaceConstant(std::string& input, const std::unordered_map<std::string, std::string>& tokens);
+	void replaceFunction(std::string& line);
+	void replaceSerie(std::string& line, uint8_t k, double x, double y);
+	double calculateExpression(CMathParser& mathParser, const std::string& line);
+	double generateKthTerm(CMathParser& mathParser, const QString& line, uint8_t k);
+	void generateKthTerms(CMathParser& parser);
+	double generateFComp(CMathParser& mathParser, std::string& lineToEdit, double xComp_k, double xComp_k1, double yComp_k, double yComp_k1, double x, double y, uint8_t k);
+	QCPGraphData generateFk(CMathParser& mathParser, uint8_t k, double x, double y, std::string& fX, std::string& fY);
+	QCPGraphData generate2DPoints(CMathParser& mathParser, std::string& fX, std::string& fY, const double& x, const double& y);
+	void plotting(int numberFile);
+	bool CheckConstraintN();
+	void ReadQDomNode(const QDomNode& node);
+
+    bool CheckData();
 
 private:
-    const double DN = 0.4;
-    std::unique_ptr<Ui::MainWindowClass> ui = std::make_unique<Ui::MainWindowClass>();
+	const double DN = 0.4;
+	std::unique_ptr<Ui::MainWindowClass> ui = std::make_unique<Ui::MainWindowClass>();
+    std::unique_ptr<QMessageBox> error = std::make_unique<QMessageBox>();
 };
