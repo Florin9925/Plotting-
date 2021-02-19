@@ -250,6 +250,7 @@ Makefile: ..\QtExample\Plotting.pro D:\Qt\Qt5.12.10\5.12.10\msvc2017_64\mkspecs\
 		D:\Qt\Qt5.12.10\5.12.10\msvc2017_64\lib\Qt5PrintSupport.prl \
 		D:\Qt\Qt5.12.10\5.12.10\msvc2017_64\lib\Qt5Widgets.prl \
 		D:\Qt\Qt5.12.10\5.12.10\msvc2017_64\lib\Qt5Gui.prl \
+		D:\Qt\Qt5.12.10\5.12.10\msvc2017_64\lib\Qt5Xml.prl \
 		D:\Qt\Qt5.12.10\5.12.10\msvc2017_64\lib\Qt5Core.prl \
 		D:\Qt\Qt5.12.10\5.12.10\msvc2017_64\lib\qtmain.prl
 	$(QMAKE) -o Makefile ..\QtExample\Plotting.pro -spec win32-msvc "CONFIG+=debug" "CONFIG+=qml_debug"
@@ -426,6 +427,7 @@ D:\Qt\Qt5.12.10\5.12.10\msvc2017_64\mkspecs\features\lex.prf:
 D:\Qt\Qt5.12.10\5.12.10\msvc2017_64\lib\Qt5PrintSupport.prl:
 D:\Qt\Qt5.12.10\5.12.10\msvc2017_64\lib\Qt5Widgets.prl:
 D:\Qt\Qt5.12.10\5.12.10\msvc2017_64\lib\Qt5Gui.prl:
+D:\Qt\Qt5.12.10\5.12.10\msvc2017_64\lib\Qt5Xml.prl:
 D:\Qt\Qt5.12.10\5.12.10\msvc2017_64\lib\Qt5Core.prl:
 D:\Qt\Qt5.12.10\5.12.10\msvc2017_64\lib\qtmain.prl:
 qmake: FORCE

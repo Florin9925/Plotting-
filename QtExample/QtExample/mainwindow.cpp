@@ -2,7 +2,7 @@
 #include <QMessageBox>
 //#include <QtXml/QtXml>
 
-//#include<QtXml/QDomDocument>
+#include<QtXml/QDomDocument>
 #include <QFile>
 
 MainWindow::MainWindow(std::unique_ptr<QWidget> parent) : QMainWindow(parent.get()),
@@ -126,20 +126,16 @@ QCPGraphData MainWindow::generateFk(CMathParser &mathParser, uint8_t k, double x
     return resultPoint;
 }
 
-QCPGraphData MainWindow::generate2DPoints(CMathParser &mathParser, std::string &fX, std::string &fY)
+QCPGraphData MainWindow::generate2DPoints(CMathParser &mathParser, std::string &fX, std::string &fY, const double& x, const double& y)
 {
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<> disDouble(0.0, 1.0);
     std::uniform_int_distribution<> disInt(1, 100);
     QCPGraphData result;
     uint8_t k = disInt(gen);
 
-    double x0 = disDouble(gen);
-    double y0 = disDouble(gen);
-
-    return generateFk(mathParser, k, x0, y0, fX, fY);
+    return generateFk(mathParser, k, x, y, fX, fY);
     ;
 }
 
@@ -239,11 +235,19 @@ void MainWindow::generateKthTerms(CMathParser &parser)
 
 void MainWindow::SelectButtonStep1()
 {
-    int numberPoint = 100;
+    int numberPoint = 1000;
         int numberThread;
         if(std::thread::hardware_concurrency()>0) numberThread=std::thread::hardware_concurrency();
         else numberThread=4;
     CMathParser parser;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> disDouble(0.0, 1.0);
+    QCPGraphData result;
+
+    x0 = disDouble(gen);
+    y0 = disDouble(gen);
 
     //Generez toti xn,yn
     generateKthTerms(parser);
@@ -257,8 +261,10 @@ void MainWindow::SelectButtonStep1()
         std::ofstream out(fileName);
         for (int i = start; i < stop; ++i) // data for graphs 2, 3 and 4
         {
-            QCPGraphData temp = generate2DPoints(parser, fX, fY);
+            QCPGraphData temp = generate2DPoints(parser, fX, fY, x0, y0);
             out << temp.key << " " << temp.value << "\n";
+            x0 = temp.key;
+            y0 = temp.value;
         }
         out.close();
     };
@@ -287,16 +293,6 @@ void MainWindow::SelectButtonStep2()
 
     generateKthTerms(parser);
 
-    /*
-    for(int index = 0; index < 10000; index++)
-    {
-
-    QCPGraphData temp = generate2DPoints(parser,fX,fY);
-    s += QString::number(temp.key) + QString::number(temp.value);
-
-    }
-    ui->lineEditX0->setText(s);
-    */
 }
 
 void MainWindow::AddPointsButton()
@@ -306,7 +302,6 @@ void MainWindow::AddPointsButton()
         if(std::thread::hardware_concurrency()>0) numberThread=std::thread::hardware_concurrency();
         else numberThread=4;
     CMathParser parser;
-
     generateKthTerms(parser);
 
     std::string fX(ui->lineEditFx->text().toStdString()), fY(ui->lineEditFy->text().toStdString());
@@ -318,8 +313,10 @@ void MainWindow::AddPointsButton()
         std::ofstream out(fileName, std::ios_base::app);
         for (int i = start; i < stop; ++i) // data for graphs 2, 3 and 4
         {
-            QCPGraphData temp = generate2DPoints(parser, fX, fY);
+            QCPGraphData temp = generate2DPoints(parser, fX, fY, x0, y0);
             out << temp.key << " " << temp.value << "\n";
+            x0 = temp.key;
+            y0 = temp.value;
         }
         out.close();
     };
@@ -347,17 +344,22 @@ void MainWindow::ActionExit()
 
 void MainWindow::DefaultStep1()
 {
-    /*
+
     QDomDocument doc("mydocument");
-    QFile file("mydocument.xml");
-    if (!file.open(QIODevice::ReadOnly))
-        return;
-    if (!doc.setContent(&file)) {
-        file.close();
-        return;
+    QFile file("..//.//QtExample\\Default\\default.xml");
+
+    QDomElement docElem = doc.documentElement();
+
+    QDomNode n = docElem.firstChild();
+    while(!n.isNull()) {
+        QDomElement e = n.toElement(); // try to convert the node to an element.
+        if(!e.isNull()) {
+            ui->lineEditTest->setText(  qPrintable(e.tagName())); // the node really is an element.
+        }
+        n = n.nextSibling();
     }
-    file.close();
-    */
+
+
 }
 
 void MainWindow::DefaultStep2()

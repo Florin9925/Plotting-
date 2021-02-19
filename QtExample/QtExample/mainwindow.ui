@@ -589,6 +589,22 @@ background:#148dfa;</string>
      <string>Default step2</string>
     </property>
    </widget>
+   <widget class="QLineEdit" name="lineEditTest">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>640</y>
+      <width>201</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-style: outset;
+border-width: 1px;
+border-radius: 10px;
+border-color: rgb(181, 204, 214);</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

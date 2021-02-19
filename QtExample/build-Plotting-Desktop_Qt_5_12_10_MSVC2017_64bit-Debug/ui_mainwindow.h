@@ -57,6 +57,7 @@ public:
     QPushButton *pushButtonAddPoints;
     QPushButton *pushButtonDefaultStep1;
     QPushButton *pushButtonDefaultStep2;
+    QLineEdit *lineEditTest;
     QMenuBar *menuBar;
     QMenu *menuExit;
     QStatusBar *statusBar;
@@ -259,6 +260,13 @@ public:
 "font: 10pt  \"Century Gothic\";\n"
 "color:#19232D;\n"
 "background:#148dfa;"));
+        lineEditTest = new QLineEdit(centralWidget);
+        lineEditTest->setObjectName(QString::fromUtf8("lineEditTest"));
+        lineEditTest->setGeometry(QRect(70, 640, 201, 91));
+        lineEditTest->setStyleSheet(QString::fromUtf8("border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 10px;\n"
+"border-color: rgb(181, 204, 214);"));
         MainWindowClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindowClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
