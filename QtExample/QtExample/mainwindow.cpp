@@ -112,14 +112,14 @@ QCPGraphData MainWindow::generateFk(CMathParser& mathParser, uint8_t k, double x
 	return resultPoint;
 }
 
-QCPGraphData MainWindow::generate2DPoints(CMathParser& mathParser, std::string& fX, std::string& fY, const double& x, const double& y)
+QCPGraphData MainWindow::generate2DPoints(CMathParser& mathParser, std::string& fX, std::string& fY, const double& x, const double& y, int k)
 {
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> disInt(1, 100);
 	QCPGraphData result;
-	uint8_t k = disInt(gen);
+    if(k == -1) k = disInt(gen);
 
 	return generateFk(mathParser, k, x, y, fX, fY);
 }
@@ -299,10 +299,41 @@ void MainWindow::SelectButtonStep2()
         set K;
         GenerateKPoints(K, numberPointsK);
         int p = std::stoi(ui->lineEditP->text().toStdString());
+        int n = std::stoi(ui->lineEditN->text().toStdString());
         for(int index = 0; index<=p; ++index)
         {
             std::string nameDir = "..//.//QtExample\\Step2\\K"+std::to_string(index);
             _mkdir(nameDir.c_str());
+        }
+        CMathParser parser;
+        generateKthTerms(parser);
+        std::string fX(ui->lineEditFx->text().toStdString()), fY(ui->lineEditFy->text().toStdString());
+
+        replaceFunction(fX);
+        replaceFunction(fY);
+
+        auto generate = [&](std::string fileName, set K)
+        {
+            for(int index = 1; index<=n; ++index)
+            {
+                std::ofstream out(fileName+"f"+std::to_string(index)+".txt");
+                for(auto &point : K)
+                {
+                    QCPGraphData temp = generate2DPoints(parser, fX, fY, point.first, point.second, index);
+                    out << temp.key << " " << temp.value << "\n";
+                }
+            }
+        };
+        std::ofstream out("..//.//QtExample\\Step2\\K0\\f1.txt");
+        for(auto &point : K)
+        {
+            out<<point.first<<" "<<point.second<<"\n";
+        }
+        out.close();
+
+        for(int index= 1; index<=p; ++index)
+        {
+            generate("..//.//QtExample\\Step2\\K"+std::to_string(index)+"\\", K);
         }
 
     }
