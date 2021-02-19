@@ -15,6 +15,9 @@ ui(new Ui::MainWindowClass)
 	ui->lineEditML->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
 	ui->lineEditMU->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
 	ui->lineEditInitialPoints->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
+    ui->lineEditK->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
+    ui->lineEditN->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
+    ui->lineEditP->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
 
 	connect(ui->pushButtonStep1, &QPushButton::clicked, this, &MainWindow::SelectButtonStep1);
 	connect(ui->pushButtonStep2, &QPushButton::released, this, &MainWindow::SelectButtonStep2);
@@ -215,6 +218,18 @@ void MainWindow::generateKthTerms(CMathParser& parser)
 	}
 }
 
+void MainWindow::GenerateKPoints(set& k, const int& numberPoints)
+{
+    while(k.size()<numberPoints)
+    {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<> disDouble(0.0, 1.0);
+        QCPGraphData result;
+        k.insert({disDouble(gen),disDouble(gen)});
+    }
+}
+
 void MainWindow::SelectButtonStep1()
 {
 	if (CheckData()) {
@@ -278,10 +293,25 @@ void MainWindow::SelectButtonStep1()
 
 void MainWindow::SelectButtonStep2()
 {
-	CMathParser parser;
+    if(CheckData())
+    {
+        int numberPointsK = std::stoi(ui->lineEditK->text().toStdString());
+        set K;
+        GenerateKPoints(K, numberPointsK);
+        int p = std::stoi(ui->lineEditP->text().toStdString());
+        for(int index = 0; index<=p; ++index)
+        {
+            std::string nameDir = "..//.//QtExample\\Step2\\K"+std::to_string(index);
+            _mkdir(nameDir.c_str());
+        }
 
-	generateKthTerms(parser);
-
+    }
+    else
+    {
+        error->setWindowTitle("Error");
+        error->setText(QString::fromStdString("Insert function!"));
+        error->show();
+    }
 }
 
 void MainWindow::AddPointsButton()
@@ -426,6 +456,7 @@ void MainWindow::Clean()
 	ui->lineEditFy->setText("");
 	ui->lineEditReadXML->setText("");
 }
+
 void MainWindow::ReadXML()
 {
 	QString aux = QFileDialog::getOpenFileName(this, tr("Open Directory"), "D:\\", "*.xml");

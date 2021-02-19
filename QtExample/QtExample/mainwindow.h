@@ -17,8 +17,24 @@
 #include <regex>
 #include <sstream>
 #include <unordered_map>
+#include <unordered_set>
+#include <tuple>
+#include <direct.h>
 
 static const double PADDING = 0.2;
+using set = std::unordered_set<std::pair<double, double>>;
+
+template <>
+struct std::hash<std::pair<double, double>>
+{
+    size_t operator()(const std::pair<double, double>& k) const
+    {
+        size_t res = 17;
+        res = res * 31 + std::hash<double>()(k.first);
+        res = res * 31 + std::hash<double>()(k.second);
+        return res;
+    }
+};
 
 class MainWindow : public QMainWindow
 {
@@ -59,6 +75,7 @@ private:
 	void plotting(int numberFile);
 	bool CheckConstraintN();
 	void ReadQDomNode(const QDomNode& node);
+    void GenerateKPoints(set& k, const int& numberPoints);
 
     bool CheckData();
 
