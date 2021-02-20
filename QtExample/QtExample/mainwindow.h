@@ -49,6 +49,7 @@ public:
 	~MainWindow();
 
 private slots:
+    void facing();
 	void SelectButtonStep1();
 	void SelectButtonStep2();
 	void AddPointsButton();

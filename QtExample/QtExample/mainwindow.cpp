@@ -190,7 +190,7 @@ void MainWindow::plotting(int numberFile)
 	ui->potWidget->graph(0)->rescaleAxes();
 	// set ranges appropriate to show data:
 	// set labels:
-	ui->potWidget->xAxis->setLabel("Bottom axis with outward ticks");
+    ui->potWidget->xAxis->setLabel("Bottom axis label");
 	ui->potWidget->yAxis->setLabel("Left axis label");
 	ui->potWidget->xAxis2->setLabel("Top axis label");
 	ui->potWidget->yAxis2->setLabel("Right axis label");
@@ -201,7 +201,17 @@ void MainWindow::plotting(int numberFile)
 void MainWindow::plottingStep2(const int& n, const int& p)
 {
 	// set locale to english, so we get english month names:
-	ui->potWidget->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));
+    QVector<Qt::GlobalColor> colors;
+    colors.push_back(Qt::red);
+    colors.push_back(Qt::gray);
+    colors.push_back(Qt::blue);
+    colors.push_back(Qt::yellow);
+    colors.push_back(Qt::cyan);
+    colors.push_back(Qt::magenta);
+    colors.push_back(Qt::green);
+    colors.push_back(Qt::black);
+
+    ui->potWidget->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));
 
 	QVector<double> xVector;
 	QVector<double> yVector;
@@ -226,57 +236,61 @@ void MainWindow::plottingStep2(const int& n, const int& p)
 		}
 	};
 
-	for (int indexDir = 1; indexDir <= p; ++indexDir)
+
+    readFile("..//.//QtExample\\Step2\\K0\\f1.txt");
+    ui->potWidget->addGraph();
+    //ui->potWidget->graph()->setLineStyle(QCPGraph::lsLine);
+    ui->potWidget->graph(0)->setPen(QPen(colors[0]));
+    ui->potWidget->graph(0)->setData(xVector, yVector);
+    ui->potWidget->graph()->setLineStyle(QCPGraph::lsLine);
+    //ui->potWidget->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 3));
+
+    for (int indexDir = 1; indexDir <= p; ++indexDir)
 	{
 		xVector.clear();
 		yVector.clear();
 		for (int indexFile = 1; indexFile <= n; ++indexFile)
 		{
-			readFile("..//.//QtExample\\Step2\\K" + std::to_string(indexDir) + "\\f" + std::to_string(indexFile) + ".txt");
+            readFile("..//.//QtExample\\Step2\\K" + std::to_string(indexDir) + "\\f" + std::to_string(indexFile) + ".txt");
 		}
 		ui->potWidget->addGraph();
-		QColor color(20 + 200 / 4.0 * (indexDir - 1), 70 * (1.6 - (indexDir - 1) / 4.0), 150, 255);
-		ui->potWidget->graph()->setLineStyle(QCPGraph::lsLine);
-		ui->potWidget->graph()->setPen(QPen(color.lighter(200)));
-		ui->potWidget->graph()->setBrush(QBrush(color));
-		ui->potWidget->graph(indexDir - 1)->setData(xVector, yVector);
+        //QColor color(20 + 200 / 4.0 * (indexDir - 1), 70 * (1.6 - (indexDir - 1) / 4.0), 150, 255);
+        //ui->potWidget->graph()->setLineStyle(QCPGraph::lsLine);
+        ui->potWidget->graph(indexDir)->setPen(QPen(colors[indexDir]));
+        //ui->potWidget->graph()->setBrush(QBrush(color));
+        ui->potWidget->graph(indexDir)->setData(xVector, yVector);
+        ui->potWidget->graph()->setLineStyle(QCPGraph::lsLine);
+       // ui->potWidget->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 3));
+
+
 	}
 
 
-	connect(ui->potWidget->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->potWidget->xAxis2, SLOT(setRange(QCPRange)));
-	connect(ui->potWidget->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->potWidget->yAxis2, SLOT(setRange(QCPRange)));
 
+    //std::unique_ptr<QCPSelectionDecorator> decorator = std::make_unique<QCPSelectionDecorator>();
+    //decorator->setPen(QPen(Qt::green, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 
-
-
-
-	// configure left axis text labels:
-	QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
-	textTicker->addTick(10, "a bit\nlow");
-	textTicker->addTick(50, "quite\nhigh");
-	ui->potWidget->yAxis->setTicker(textTicker);
-	// set a more compact font size for bottom and left axis tick labels:
-	ui->potWidget->xAxis->setTickLabelFont(QFont(QFont().family(), 8));
-	ui->potWidget->yAxis->setTickLabelFont(QFont(QFont().family(), 8));
-	// set axis labels:
-	ui->potWidget->xAxis->setLabel("Date");
-	ui->potWidget->yAxis->setLabel("Random wobbly lines value");
-	// make top and right axes visible but without ticks and labels:
-	ui->potWidget->xAxis2->setVisible(true);
-	ui->potWidget->yAxis2->setVisible(true);
-	ui->potWidget->xAxis2->setTicks(false);
-	ui->potWidget->yAxis2->setTicks(false);
-	ui->potWidget->xAxis2->setTickLabels(false);
-	ui->potWidget->yAxis2->setTickLabels(false);
-	// set axis ranges to show all data:
-
-	ui->potWidget->yAxis->setRange(0, 60);
-	// show legend with slightly transparent background brush:
-	ui->potWidget->legend->setVisible(true);
-	ui->potWidget->legend->setBrush(QColor(255, 255, 255, 150));
-
-	ui->potWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-	ui->potWidget->replot();
+    //ui->potWidget->graph()->setSelectionDecorator(nullptr);
+    //ui->potWidget->graph()->setSelectable(QCP::SelectionType::stSingleData);
+    //ui->potWidget->graph(p - 1)->setVisible(false);
+    ui->potWidget->graph()->rescaleAxes();
+    //connect(ui->potWidget->graph(), SIGNAL(QCPGraph::selectionChanged), SLOT(MainWindow::facing));
+    ui->potWidget->xAxis->setVisible(true);
+    ui->potWidget->xAxis2->setVisible(true);
+    //ui->potWidget->xAxis2->setTickLabels(false);
+    ui->potWidget->yAxis->setVisible(true);
+    ui->potWidget->yAxis2->setVisible(true);
+    //ui->potWidget->yAxis2->setTickLabels(false);
+    // make left and bottom axes always transfer their ranges to right and top axes:
+    connect(ui->potWidget->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->potWidget->xAxis2, SLOT(setRange(QCPRange)));
+    connect(ui->potWidget->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->potWidget->yAxis2, SLOT(setRange(QCPRange)));
+    // set labels:
+    ui->potWidget->xAxis->setLabel("Bottom axis label");
+    ui->potWidget->yAxis->setLabel("Left axis label");
+    ui->potWidget->xAxis2->setLabel("Top axis label");
+    ui->potWidget->yAxis2->setLabel("Right axis label");
+    ui->potWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    ui->potWidget->replot();
 }
 
 void MainWindow::replaceFunction(std::string& line)
@@ -310,6 +324,16 @@ void MainWindow::GenerateKPoints(set& k, const int& numberPoints)
 		QCPGraphData result;
 		k.insert({ disDouble(gen),disDouble(gen) });
 	}
+}
+
+void MainWindow::facing()
+{
+
+    for(int index = 1; index <= ui->lineEditP->text().toInt(); ++index)
+    {
+        if(ui->potWidget->graph(index)->selected() == false)
+            ui->potWidget->graph(index)->setVisible(false);
+    }
 }
 
 void MainWindow::SelectButtonStep1()
@@ -351,16 +375,16 @@ void MainWindow::SelectButtonStep1()
 
 		std::vector<std::thread> threads;
 
-		auto spawnThreads = [&]()
-		{
-			for (int i = 1; i <= numberThread; i++) {
-				threads.push_back(std::thread(generate, 0, numberPoint / numberThread, "..//.//QtExample\\Step1\\file" + std::to_string(i) + ".txt"));
-			}
-
-			for (auto& th : threads) {
-				th.join();
-			}
-		};
+        auto spawnThreads = [&]()
+                {
+                    for (int i = 1; i < numberThread; i++) {
+                        threads.push_back(std::thread(generate, 0, numberPoint / numberThread, "..//.//QtExample\\Step1\\file" + std::to_string(i) + ".txt"));
+                    }
+                    threads.push_back(std::thread(generate, 0, numberPoint-numberPoint / numberThread*(numberThread-1), "..//.//QtExample\\Step1\\file" + std::to_string(numberThread) + ".txt"));
+                    for (auto& th : threads) {
+                        th.join();
+                    }
+                };
 
 		spawnThreads();
 		plotting(numberThread);
@@ -462,16 +486,16 @@ void MainWindow::AddPointsButton()
 	};
 	std::vector<std::thread> threads;
 
-	auto spawnThreads = [&]()
-	{
-		for (int i = 1; i <= numberThread; i++) {
-			threads.push_back(std::thread(generate, 0, numberPoint / numberThread, "..//.//QtExample\\Step1\\file" + std::to_string(i) + ".txt"));
-		}
-
-		for (auto& th : threads) {
-			th.join();
-		}
-	};
+    auto spawnThreads = [&]()
+            {
+                for (int i = 1; i < numberThread; i++) {
+                    threads.push_back(std::thread(generate, 0, numberPoint / numberThread, "..//.//QtExample\\Step1\\file" + std::to_string(i) + ".txt"));
+                }
+                threads.push_back(std::thread(generate, 0, numberPoint-numberPoint / numberThread*(numberThread-1), "..//.//QtExample\\Step1\\file" + std::to_string(numberThread) + ".txt"));
+                for (auto& th : threads) {
+                    th.join();
+                }
+            };
 
 	spawnThreads();
 	plotting(numberThread);
