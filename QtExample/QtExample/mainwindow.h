@@ -52,6 +52,7 @@ private slots:
 	void SelectButtonStep1();
 	void SelectButtonStep2();
 	void AddPointsButton();
+    void MakeGraphStep2();
 	void DefaultStep1();
 	void DefaultStep2();
 	void Clean();
@@ -73,6 +74,7 @@ private:
 	QCPGraphData generateFk(CMathParser& mathParser, uint8_t k, double x, double y, std::string& fX, std::string& fY);
     QCPGraphData generate2DPoints(CMathParser& mathParser, std::string& fX, std::string& fY, const double& x, const double& y, int k = -1);
 	void plotting(int numberFile);
+    void plottingStep2(const int& n, const int& p);
 	bool CheckConstraintN();
 	void ReadQDomNode(const QDomNode& node);
     void GenerateKPoints(set& k, const int& numberPoints);

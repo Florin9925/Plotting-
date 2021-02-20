@@ -15,16 +15,17 @@ ui(new Ui::MainWindowClass)
 	ui->lineEditML->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
 	ui->lineEditMU->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
 	ui->lineEditInitialPoints->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
-    ui->lineEditK->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
-    ui->lineEditN->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
-    ui->lineEditP->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
+    ui->lineEditK->setValidator(new QRegExpValidator(QRegExp("(^[1-9]?$|^10$)"), this));
+	ui->lineEditN->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
+	ui->lineEditP->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
 
 	connect(ui->pushButtonStep1, &QPushButton::clicked, this, &MainWindow::SelectButtonStep1);
 	connect(ui->pushButtonStep2, &QPushButton::released, this, &MainWindow::SelectButtonStep2);
 	connect(ui->pushButtonAddPoints, &QPushButton::released, this, &MainWindow::AddPointsButton);
 	connect(ui->pushButtonDefaultStep1, &QPushButton::released, this, &MainWindow::DefaultStep1);
 	connect(ui->pushButtonDefaultStep2, &QPushButton::released, this, &MainWindow::DefaultStep2);
-	connect(ui->pushButtonClean, &QPushButton::clicked, this, &MainWindow::Clean);
+	connect(ui->pushButtonDefaultStep2, &QPushButton::released, this, &MainWindow::DefaultStep2);
+	connect(ui->pushButtonMakeGraphStep2, &QPushButton::clicked, this, &MainWindow::MakeGraphStep2);
 	connect(ui->pushButtonReadXML, &QPushButton::clicked, this, &MainWindow::ReadXML);
 	connect(ui->actionExit, &QAction::triggered, this, &MainWindow::ActionExit);
 }
@@ -119,7 +120,7 @@ QCPGraphData MainWindow::generate2DPoints(CMathParser& mathParser, std::string& 
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> disInt(1, 100);
 	QCPGraphData result;
-    if(k == -1) k = disInt(gen);
+	if (k == -1) k = disInt(gen);
 
 	return generateFk(mathParser, k, x, y, fX, fY);
 }
@@ -197,6 +198,87 @@ void MainWindow::plotting(int numberFile)
 	ui->potWidget->replot();
 }
 
+void MainWindow::plottingStep2(const int& n, const int& p)
+{
+	// set locale to english, so we get english month names:
+	ui->potWidget->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));
+
+	QVector<double> xVector;
+	QVector<double> yVector;
+
+	auto readFile = [&](std::string fileName) {
+		for (std::ifstream in(fileName); !in.eof();)
+		{
+			std::string line;
+			std::getline(in, line);
+			if (std::regex_match(line, std::regex(R"([+-]?(\d*.\d*) [+-]?(\d*.\d*))")))
+			{
+				std::stringstream ss(line);
+				std::string item;
+				std::getline(ss, item, ' ');
+
+				double x = std::stod(item);
+				std::getline(ss, item, ' ');
+				double y = std::stod(item);
+				xVector.push_back(x);
+				yVector.push_back(y);
+			}
+		}
+	};
+
+	for (int indexDir = 1; indexDir <= p; ++indexDir)
+	{
+		xVector.clear();
+		yVector.clear();
+		for (int indexFile = 1; indexFile <= n; ++indexFile)
+		{
+			readFile("..//.//QtExample\\Step2\\K" + std::to_string(indexDir) + "\\f" + std::to_string(indexFile) + ".txt");
+		}
+		ui->potWidget->addGraph();
+		QColor color(20 + 200 / 4.0 * (indexDir - 1), 70 * (1.6 - (indexDir - 1) / 4.0), 150, 255);
+		ui->potWidget->graph()->setLineStyle(QCPGraph::lsLine);
+		ui->potWidget->graph()->setPen(QPen(color.lighter(200)));
+		ui->potWidget->graph()->setBrush(QBrush(color));
+		ui->potWidget->graph(indexDir - 1)->setData(xVector, yVector);
+	}
+
+
+	connect(ui->potWidget->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->potWidget->xAxis2, SLOT(setRange(QCPRange)));
+	connect(ui->potWidget->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->potWidget->yAxis2, SLOT(setRange(QCPRange)));
+
+
+
+
+
+	// configure left axis text labels:
+	QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
+	textTicker->addTick(10, "a bit\nlow");
+	textTicker->addTick(50, "quite\nhigh");
+	ui->potWidget->yAxis->setTicker(textTicker);
+	// set a more compact font size for bottom and left axis tick labels:
+	ui->potWidget->xAxis->setTickLabelFont(QFont(QFont().family(), 8));
+	ui->potWidget->yAxis->setTickLabelFont(QFont(QFont().family(), 8));
+	// set axis labels:
+	ui->potWidget->xAxis->setLabel("Date");
+	ui->potWidget->yAxis->setLabel("Random wobbly lines value");
+	// make top and right axes visible but without ticks and labels:
+	ui->potWidget->xAxis2->setVisible(true);
+	ui->potWidget->yAxis2->setVisible(true);
+	ui->potWidget->xAxis2->setTicks(false);
+	ui->potWidget->yAxis2->setTicks(false);
+	ui->potWidget->xAxis2->setTickLabels(false);
+	ui->potWidget->yAxis2->setTickLabels(false);
+	// set axis ranges to show all data:
+
+	ui->potWidget->yAxis->setRange(0, 60);
+	// show legend with slightly transparent background brush:
+	ui->potWidget->legend->setVisible(true);
+	ui->potWidget->legend->setBrush(QColor(255, 255, 255, 150));
+
+	ui->potWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	ui->potWidget->replot();
+}
+
 void MainWindow::replaceFunction(std::string& line)
 {
 	std::unordered_map<std::string, std::string> constants;
@@ -220,14 +302,14 @@ void MainWindow::generateKthTerms(CMathParser& parser)
 
 void MainWindow::GenerateKPoints(set& k, const int& numberPoints)
 {
-    while(k.size()<numberPoints)
-    {
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_real_distribution<> disDouble(0.0, 1.0);
-        QCPGraphData result;
-        k.insert({disDouble(gen),disDouble(gen)});
-    }
+	while (k.size() < numberPoints)
+	{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<> disDouble(0.0, 1.0);
+		QCPGraphData result;
+		k.insert({ disDouble(gen),disDouble(gen) });
+	}
 }
 
 void MainWindow::SelectButtonStep1()
@@ -293,56 +375,64 @@ void MainWindow::SelectButtonStep1()
 
 void MainWindow::SelectButtonStep2()
 {
-    if(CheckData())
-    {
-        int numberPointsK = std::stoi(ui->lineEditK->text().toStdString());
-        set K;
-        GenerateKPoints(K, numberPointsK);
-        int p = std::stoi(ui->lineEditP->text().toStdString());
-        int n = std::stoi(ui->lineEditN->text().toStdString());
-        for(int index = 0; index<=p; ++index)
-        {
-            std::string nameDir = "..//.//QtExample\\Step2\\K"+std::to_string(index);
-            _mkdir(nameDir.c_str());
-        }
-        CMathParser parser;
-        generateKthTerms(parser);
-        std::string fX(ui->lineEditFx->text().toStdString()), fY(ui->lineEditFy->text().toStdString());
+	if (CheckData())
+	{
+		int numberPointsK = std::stoi(ui->lineEditK->text().toStdString());
+		set K;
+		GenerateKPoints(K, numberPointsK);
+		int p = std::stoi(ui->lineEditP->text().toStdString());
+		int n = std::stoi(ui->lineEditN->text().toStdString());
+		for (int index = 0; index <= p; ++index)
+		{
+			std::string nameDir = "..//.//QtExample\\Step2\\K" + std::to_string(index);
+			_mkdir(nameDir.c_str());
+		}
+		CMathParser parser;
+		generateKthTerms(parser);
+		std::string fX(ui->lineEditFx->text().toStdString()), fY(ui->lineEditFy->text().toStdString());
 
-        replaceFunction(fX);
-        replaceFunction(fY);
+		replaceFunction(fX);
+		replaceFunction(fY);
 
-        auto generate = [&](std::string fileName, set K)
-        {
-            for(int index = 1; index<=n; ++index)
-            {
-                std::ofstream out(fileName+"f"+std::to_string(index)+".txt");
-                for(auto &point : K)
-                {
-                    QCPGraphData temp = generate2DPoints(parser, fX, fY, point.first, point.second, index);
-                    out << temp.key << " " << temp.value << "\n";
-                }
-            }
-        };
-        std::ofstream out("..//.//QtExample\\Step2\\K0\\f1.txt");
-        for(auto &point : K)
-        {
-            out<<point.first<<" "<<point.second<<"\n";
-        }
-        out.close();
+		auto generate = [&](std::string fileName, set K0)
+		{
+			K.clear();
+			for (int index = 1; index <= n; ++index)
+			{
+				std::ofstream out(fileName + "f" + std::to_string(index) + ".txt");
+				for (auto& point : K0)
+				{
+					QCPGraphData temp = generate2DPoints(parser, fX, fY, point.first, point.second, index);
+					out << temp.key << " " << temp.value << "\n";
+					K.insert({ temp.key, temp.value });
+				}
+			}
+		};
+		std::ofstream out("..//.//QtExample\\Step2\\K0\\f1.txt");
+		for (auto& point : K)
+		{
+			out << point.first << " " << point.second << "\n";
+		}
+		out.close();
 
-        for(int index= 1; index<=p; ++index)
-        {
-            generate("..//.//QtExample\\Step2\\K"+std::to_string(index)+"\\", K);
-        }
+		for (int index = 1; index <= p; ++index)
+		{
+			generate("..//.//QtExample\\Step2\\K" + std::to_string(index) + "\\", K);
+		}
 
-    }
-    else
-    {
-        error->setWindowTitle("Error");
-        error->setText(QString::fromStdString("Insert function!"));
-        error->show();
-    }
+
+	}
+	else
+	{
+		error->setWindowTitle("Error");
+		error->setText(QString::fromStdString("Insert function!"));
+		error->show();
+	}
+}
+
+void MainWindow::MakeGraphStep2()
+{
+	plottingStep2(std::stoi(ui->lineEditN->text().toStdString()), std::stoi(ui->lineEditP->text().toStdString()));
 }
 
 void MainWindow::AddPointsButton()

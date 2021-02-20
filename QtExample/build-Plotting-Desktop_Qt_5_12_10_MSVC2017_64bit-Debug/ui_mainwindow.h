@@ -69,6 +69,7 @@ public:
     QLabel *labelN;
     QLineEdit *lineEditP;
     QLabel *labelP;
+    QPushButton *pushButtonMakeGraphStep2;
     QMenuBar *menuBar;
     QMenu *menuExit;
     QStatusBar *statusBar;
@@ -328,7 +329,7 @@ public:
         groupBoxStep2->setAlignment(Qt::AlignCenter);
         pushButtonStep2 = new QPushButton(groupBoxStep2);
         pushButtonStep2->setObjectName(QString::fromUtf8("pushButtonStep2"));
-        pushButtonStep2->setGeometry(QRect(70, 40, 121, 41));
+        pushButtonStep2->setGeometry(QRect(80, 30, 121, 41));
         pushButtonStep2->setFont(font2);
         pushButtonStep2->setCursor(QCursor(Qt::PointingHandCursor));
         pushButtonStep2->setStyleSheet(QString::fromUtf8("border-radius: 10px;;\n"
@@ -337,37 +338,46 @@ public:
 "background:#148dfa;"));
         labelK = new QLabel(groupBoxStep2);
         labelK->setObjectName(QString::fromUtf8("labelK"));
-        labelK->setGeometry(QRect(60, 100, 41, 31));
+        labelK->setGeometry(QRect(60, 80, 41, 31));
         labelK->setFont(font1);
         lineEditK = new QLineEdit(groupBoxStep2);
         lineEditK->setObjectName(QString::fromUtf8("lineEditK"));
-        lineEditK->setGeometry(QRect(120, 100, 91, 31));
+        lineEditK->setGeometry(QRect(120, 80, 91, 31));
         lineEditK->setStyleSheet(QString::fromUtf8("border-style: outset;\n"
 "border-width: 1px;\n"
 "border-radius: 10px;\n"
 "border-color: rgb(181, 204, 214);"));
         lineEditN = new QLineEdit(groupBoxStep2);
         lineEditN->setObjectName(QString::fromUtf8("lineEditN"));
-        lineEditN->setGeometry(QRect(120, 140, 91, 31));
+        lineEditN->setGeometry(QRect(120, 120, 91, 31));
         lineEditN->setStyleSheet(QString::fromUtf8("border-style: outset;\n"
 "border-width: 1px;\n"
 "border-radius: 10px;\n"
 "border-color: rgb(181, 204, 214);"));
         labelN = new QLabel(groupBoxStep2);
         labelN->setObjectName(QString::fromUtf8("labelN"));
-        labelN->setGeometry(QRect(60, 140, 41, 31));
+        labelN->setGeometry(QRect(60, 120, 41, 31));
         labelN->setFont(font1);
         lineEditP = new QLineEdit(groupBoxStep2);
         lineEditP->setObjectName(QString::fromUtf8("lineEditP"));
-        lineEditP->setGeometry(QRect(120, 180, 91, 31));
+        lineEditP->setGeometry(QRect(120, 160, 91, 31));
         lineEditP->setStyleSheet(QString::fromUtf8("border-style: outset;\n"
 "border-width: 1px;\n"
 "border-radius: 10px;\n"
 "border-color: rgb(181, 204, 214);"));
         labelP = new QLabel(groupBoxStep2);
         labelP->setObjectName(QString::fromUtf8("labelP"));
-        labelP->setGeometry(QRect(60, 180, 41, 31));
+        labelP->setGeometry(QRect(60, 160, 41, 31));
         labelP->setFont(font1);
+        pushButtonMakeGraphStep2 = new QPushButton(groupBoxStep2);
+        pushButtonMakeGraphStep2->setObjectName(QString::fromUtf8("pushButtonMakeGraphStep2"));
+        pushButtonMakeGraphStep2->setGeometry(QRect(80, 210, 121, 41));
+        pushButtonMakeGraphStep2->setFont(font2);
+        pushButtonMakeGraphStep2->setCursor(QCursor(Qt::PointingHandCursor));
+        pushButtonMakeGraphStep2->setStyleSheet(QString::fromUtf8("border-radius: 10px;;\n"
+"font: 10pt  \"Century Gothic\";\n"
+"color:#19232D;\n"
+"background:#148dfa;"));
         MainWindowClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindowClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -428,13 +438,14 @@ public:
         groupBoxStep2->setToolTip(QApplication::translate("MainWindowClass", "<html><head/><body><p><span style=\" font-size:12pt;\">Resolution for the resulting </span><span style=\" font-size:12pt; font-style:italic;\">Mosaic++</span><span style=\" font-size:12pt;\">.</span></p></body></html>", nullptr));
 #endif // QT_NO_TOOLTIP
         groupBoxStep2->setTitle(QApplication::translate("MainWindowClass", "Step2", nullptr));
-        pushButtonStep2->setText(QApplication::translate("MainWindowClass", "Make graph", nullptr));
+        pushButtonStep2->setText(QApplication::translate("MainWindowClass", "Make points", nullptr));
         labelK->setText(QApplication::translate("MainWindowClass", "k =", nullptr));
-        lineEditK->setText(QApplication::translate("MainWindowClass", "100", nullptr));
-        lineEditN->setText(QApplication::translate("MainWindowClass", "100", nullptr));
+        lineEditK->setText(QApplication::translate("MainWindowClass", "10", nullptr));
+        lineEditN->setText(QApplication::translate("MainWindowClass", "5", nullptr));
         labelN->setText(QApplication::translate("MainWindowClass", "n =", nullptr));
-        lineEditP->setText(QApplication::translate("MainWindowClass", "10", nullptr));
+        lineEditP->setText(QApplication::translate("MainWindowClass", "5", nullptr));
         labelP->setText(QApplication::translate("MainWindowClass", "p =", nullptr));
+        pushButtonMakeGraphStep2->setText(QApplication::translate("MainWindowClass", "Make graph", nullptr));
         menuExit->setTitle(QApplication::translate("MainWindowClass", "File", nullptr));
     } // retranslateUi
 
