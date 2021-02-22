@@ -77,7 +77,7 @@ private:
 	void plotting(int numberFile);
     void plottingStep2(const int& n, const int& p);
 	bool CheckConstraintN();
-	void ReadQDomNode(const QDomNode& node);
+    void ReadQDomNode(const QString& fileName, const QString& elementTagName);
     void GenerateKPoints(set& k, const int& numberPoints);
 
     bool CheckData();
