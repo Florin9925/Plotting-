@@ -13,12 +13,14 @@ SOURCES += \
     CMathParser.cpp \
     main.cpp \
     mainwindow.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    stopwatch.cpp
 
 HEADERS += \
     CMathParser.h \
     mainwindow.h \
-    qcustomplot.h
+    qcustomplot.h \
+    stopwatch.h
 
 FORMS += \
     mainwindow.ui

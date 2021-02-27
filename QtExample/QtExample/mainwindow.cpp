@@ -15,7 +15,7 @@ ui(new Ui::MainWindowClass)
 	ui->lineEditML->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
 	ui->lineEditMU->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
 	ui->lineEditInitialPoints->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
-    ui->lineEditK->setValidator(new QRegExpValidator(QRegExp("(^[1-9][1-9]?$|^100$)"), this));
+	ui->lineEditK->setValidator(new QRegExpValidator(QRegExp("(^[1-9][1-9]?$|^100$)"), this));
 	ui->lineEditN->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
 	ui->lineEditP->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
 
@@ -50,7 +50,7 @@ void MainWindow::replaceConstant(std::string& input, const std::unordered_map<st
 
 	std::size_t start = std::string::npos;
 
-	for (auto itr : tokens)
+	for (auto& itr : tokens)
 	{
 		start = input.find(itr.first);
 		while (start != std::string::npos)
@@ -68,6 +68,7 @@ double MainWindow::calculateExpression(CMathParser& mathParser, const std::strin
 
 	if (mathParser.Calculate(line.c_str(), &result) == CMathParser::ResultOk)
 	{
+		result = ((int)(result * precision)) / precision;
 		return result;
 	}
 
@@ -135,7 +136,7 @@ void MainWindow::plotting(int numberFile)
 	legendFont.setPointSize(9); // and make a bit smaller for legend
 	ui->potWidget->addGraph();
 	ui->potWidget->graph(0)->setPen(QPen(Qt::black)); // line color blue for first graph
-	QVector<std::pair<double, double>> points;
+	set k;
 
 	auto readFile = [&](std::string fileName) {
 		for (std::ifstream in(fileName); !in.eof();)
@@ -151,7 +152,7 @@ void MainWindow::plotting(int numberFile)
 				double x = std::stod(item);
 				std::getline(ss, item, ' ');
 				double y = std::stod(item);
-				points.push_back({ x,y });
+				k.insert({ x,y });
 			}
 		}
 	};
@@ -160,18 +161,11 @@ void MainWindow::plotting(int numberFile)
 	{
 		readFile("..//.//QtExample\\Step1\\file" + std::to_string(index) + ".txt");
 	}
-	/*
-		auto comparator = [](const std::pair<double, double>& point1, const std::pair<double, double>& point2)
-		{
-			return point1.first < point2.first;
-		};
 
-		qSort(points.begin(), points.end(), comparator);
-	*/
 	QVector<double> xVector;
 	QVector<double> yVector;
 
-	for (auto& item : points)
+	for (auto& item : k)
 	{
 		xVector.push_back(std::move(item.first));
 		yVector.push_back(std::move(item.second));
@@ -213,45 +207,64 @@ void MainWindow::plottingStep2(const int& n, const int& p)
 
 	ui->potWidget->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));
 
-	QVector<double> xVector;
-	QVector<double> yVector;
+	QVector<double> xVectorK0;
+	QVector<double> yVectorK0;
 
-	auto readFile = [&](std::string fileName) {
-		for (std::ifstream in(fileName); !in.eof();)
+	for (std::ifstream in("..//.//QtExample\\Step2\\K0\\f1.txt"); !in.eof();)
+	{
+		std::string line;
+		std::getline(in, line);
+		if (std::regex_match(line, std::regex(R"([+-]?(\d*.\d*) [+-]?(\d*.\d*))")))
 		{
-			std::string line;
-			std::getline(in, line);
-			if (std::regex_match(line, std::regex(R"([+-]?(\d*.\d*) [+-]?(\d*.\d*))")))
-			{
-				std::stringstream ss(line);
-				std::string item;
-				std::getline(ss, item, ' ');
+			std::stringstream ss(line);
+			std::string item;
+			std::getline(ss, item, ' ');
 
-				double x = std::stod(item);
-				std::getline(ss, item, ' ');
-				double y = std::stod(item);
-				xVector.push_back(x);
-				yVector.push_back(y);
-			}
+			double x = std::stod(item);
+			std::getline(ss, item, ' ');
+			double y = std::stod(item);
+			xVectorK0.push_back(x);
+			yVectorK0.push_back(y);
 		}
-	};
-
-
-	readFile("..//.//QtExample\\Step2\\K0\\f1.txt");
+	}
 	ui->potWidget->addGraph();
 	//ui->potWidget->graph()->setLineStyle(QCPGraph::lsLine);
 	ui->potWidget->graph(0)->setPen(QPen(colors[0]));
-	ui->potWidget->graph(0)->setData(xVector, yVector);
+	ui->potWidget->graph(0)->setData(xVectorK0, yVectorK0);
 	ui->potWidget->graph()->setLineStyle(QCPGraph::lsLine);
 	//ui->potWidget->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 3));
 
 	for (int indexDir = 1; indexDir <= p; ++indexDir)
 	{
-		xVector.clear();
-		yVector.clear();
+		set K;
 		for (int indexFile = 1; indexFile <= n; ++indexFile)
 		{
-			readFile("..//.//QtExample\\Step2\\K" + std::to_string(indexDir) + "\\f" + std::to_string(indexFile) + ".txt");
+			for (std::ifstream in("..//.//QtExample\\Step2\\K" + std::to_string(indexDir) + "\\f" + std::to_string(indexFile) + ".txt"); !in.eof();)
+			{
+				std::string line;
+				std::getline(in, line);
+				if (std::regex_match(line, std::regex(R"([+-]?(\d*.\d*) [+-]?(\d*.\d*))")))
+				{
+					std::stringstream ss(line);
+					std::string item;
+					std::getline(ss, item, ' ');
+
+					double x = std::stod(item);
+					std::getline(ss, item, ' ');
+					double y = std::stod(item);
+					K.insert({ x,y });
+
+
+				}
+			}
+
+		}
+		QVector<double> xVector;
+		QVector<double> yVector;
+		for (auto& it : K)
+		{
+			xVector.push_back(it.first);
+			yVector.push_back(it.second);
 		}
 		ui->potWidget->addGraph();
 		//QColor color(20 + 200 / 4.0 * (indexDir - 1), 70 * (1.6 - (indexDir - 1) / 4.0), 150, 255);
@@ -263,12 +276,8 @@ void MainWindow::plottingStep2(const int& n, const int& p)
 			QColor color(20 + 200 / 4.0 * (indexDir - 1), 70 * (1.6 - (indexDir - 1) / 4.0), 150, 255);
 			ui->potWidget->graph(indexDir)->setPen(QPen(color));
 		}
-		//ui->potWidget->graph()->setBrush(QBrush(color));
 		ui->potWidget->graph(indexDir)->setData(xVector, yVector);
 		ui->potWidget->graph()->setLineStyle(QCPGraph::lsLine);
-		// ui->potWidget->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 3));
-
-
 	}
 
 
@@ -344,7 +353,16 @@ void MainWindow::facing()
 
 void MainWindow::SelectButtonStep1()
 {
+	ui->labelWait->setText("");
+	ui->labelWaitMakePoint->setText("");
+	ui->labelWaitPlotting->setText("");
+	stopwatch time;
+	time.tick();
+	precision = pow(10, ui->spinBoxPrecision->value()) * 1.0;
 	if (CheckData()) {
+		stopwatch timeMakePoint;
+		timeMakePoint.tick();
+
 		int numberPoint = std::stoi(ui->lineEditInitialPoints->text().toStdString());
 		int numberThread;
 		if (std::thread::hardware_concurrency() > 0) numberThread = std::thread::hardware_concurrency();
@@ -393,20 +411,51 @@ void MainWindow::SelectButtonStep1()
 		};
 
 		spawnThreads();
+		timeMakePoint.tock();
+		std::string convertor = std::to_string(timeMakePoint.report_ms() / 1000.0);
+		convertor = convertor.substr(0, convertor.size() - 3);
+
+		ui->labelWaitMakePoint->setText(std::move(QString::fromStdString("Time for make points: " + convertor + " seconds")));
+
+		stopwatch timePlottingPoints;
+		timePlottingPoints.tick();
+
 		plotting(numberThread);
+
+		timePlottingPoints.tock();
+		convertor = std::to_string(timePlottingPoints.report_ms() / 1000.0);
+		convertor = convertor.substr(0, convertor.size() - 3);
+
+		ui->labelWaitPlotting->setText(std::move(QString::fromStdString("Time for plotting points: " + convertor + " seconds")));
 	}
 	else
 	{
 		error->setWindowTitle("Error");
 		error->setText(QString::fromStdString("Insert function!"));
 		error->show();
+		return;
 	}
+
+	time.tock();
+
+	std::string convertor = std::to_string(time.report_ms() / 1000.0);
+	convertor = convertor.substr(0, convertor.size() - 3);
+	ui->labelWait->setText(std::move(QString::fromStdString("Total time: " + convertor + " seconds")));
 }
 
 void MainWindow::SelectButtonStep2()
 {
+	ui->labelWait->setText("");
+	ui->labelWaitMakePoint->setText("");
+	ui->labelWaitPlotting->setText("");
+	precision = pow(10, ui->spinBoxPrecision->value()) * 1.0;
+	stopwatch time;
+	time.tick();
+
 	if (CheckData())
 	{
+		stopwatch timeMakePoint;
+		timeMakePoint.tick();
 		int numberPointsK = std::stoi(ui->lineEditK->text().toStdString());
 		set K;
 		GenerateKPoints(K, numberPointsK);
@@ -426,27 +475,45 @@ void MainWindow::SelectButtonStep2()
 
 		auto generate = [&](std::string fileName, set K0, int index)
 		{
-            std::ofstream out(fileName);
+			std::ofstream out(fileName);
 			for (auto& point : K0)
 			{
 				QCPGraphData temp = generate2DPoints(parser, fX, fY, point.first, point.second, index);
 				out << temp.key << " " << temp.value << "\n";
 			}
 		};
-/*
-        int numberThread;
-        if (std::thread::hardware_concurrency() > 0) numberThread = std::thread::hardware_concurrency();
-        else numberThread = 4;
-*/
+
+		int numberThread;
+		if (std::thread::hardware_concurrency() > 0) numberThread = std::thread::hardware_concurrency();
+		else numberThread = 4;
+
 		auto spawnThreads = [&](std::string fileName, set K0)
 		{
-			std::vector<std::thread> threads;
-			for (int i = 1; i <= n; i++) {
-                threads.push_back(std::thread(generate, fileName + "f" + std::to_string(i) + ".txt", std::ref(K0), i));
+            int start =0;
+			for (int i = 1; i <= n - numberThread; i = i + numberThread)
+			{
+				std::vector<std::thread> threads;
+				for (int index = 0; index < numberThread; ++index)
+				{
+                    threads.push_back(std::thread(generate, fileName + "f" + std::to_string(i + index) + ".txt", std::ref(K0), i+index));
+                    ++start;
+				}
+				for (auto& th : threads) {
+					th.join();
+				}
+
 			}
-			for (auto& th : threads) {
-				th.join();
-			}
+
+            std::vector<std::thread> threadsSecond;
+
+            for (int index = start; index <= n; ++index)
+            {
+                threadsSecond.push_back(std::thread(generate, fileName + "f" + std::to_string(index) + ".txt", std::ref(K0), index));
+            }
+            for (auto& th : threadsSecond) {
+                th.join();
+            }
+
 		};
 
 
@@ -487,21 +554,56 @@ void MainWindow::SelectButtonStep2()
 		for (int index = 1; index <= p; ++index)
 		{
 			spawnThreads("..//.//QtExample\\Step2\\K" + std::to_string(index) + "\\", K);
-            if(index<p)
-               read("..//.//QtExample\\Step2\\K" + std::to_string(index) + "\\");
+			if (index < p)
+				read("..//.//QtExample\\Step2\\K" + std::to_string(index) + "\\");
 		}
+		timeMakePoint.tock();
+		std::string convertor = std::to_string(timeMakePoint.report_ms() / 1000.0);
+		convertor = convertor.substr(0, convertor.size() - 3);
+
+		ui->labelWaitMakePoint->setText(std::move(QString::fromStdString("Time for make points: " + convertor + " seconds")));
+
+
+		stopwatch timePlottingPoints;
+		timePlottingPoints.tick();
+
+		plottingStep2(std::stoi(ui->lineEditN->text().toStdString()), std::stoi(ui->lineEditP->text().toStdString()));
+
+		timePlottingPoints.tock();
+		convertor = std::to_string(timePlottingPoints.report_ms() / 1000.0);
+		convertor = convertor.substr(0, convertor.size() - 3);
+
+		ui->labelWaitPlotting->setText(std::move(QString::fromStdString("Time for plotting points: " + convertor + " seconds")));
+
 	}
 	else
 	{
 		error->setWindowTitle("Error");
 		error->setText(QString::fromStdString("Insert function!"));
 		error->show();
+		return;
 	}
+	time.tock();
+
+	std::string convertor = std::to_string(time.report_ms() / 1000.0);
+	convertor = convertor.substr(0, convertor.size() - 3);
+	ui->labelWait->setText(std::move(QString::fromStdString("Total time: " + convertor + " seconds")));
 }
 
 void MainWindow::MakeGraphStep2()
 {
+	ui->labelWait->setText("");
+	ui->labelWaitMakePoint->setText("");
+	ui->labelWaitPlotting->setText("");
+	stopwatch time;
+	time.tick();
+
 	plottingStep2(std::stoi(ui->lineEditN->text().toStdString()), std::stoi(ui->lineEditP->text().toStdString()));
+	time.tock();
+
+	std::string convertor = std::to_string(time.report_ms() / 1000.0);
+	convertor = convertor.substr(0, convertor.size() - 3);
+	ui->labelWaitPlotting->setText(std::move(QString::fromStdString("Time for plotting points: " + convertor + " seconds")));
 }
 
 void MainWindow::AddPointsButton()
@@ -630,6 +732,8 @@ void MainWindow::Clean()
 	ui->lineEditFx->setText("");
 	ui->lineEditFy->setText("");
 	ui->lineEditReadXML->setText("");
+	ui->labelWaitMakePoint->setText("");
+	ui->labelWaitPlotting->setText("");
 }
 
 void MainWindow::ReadXML()

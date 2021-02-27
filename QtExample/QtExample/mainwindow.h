@@ -7,7 +7,7 @@
 #include <QFile>
 #include "CMathParser.h"
 #include "ui_mainwindow.h"
-
+#include "stopwatch.h"
 #include <iostream>
 #include <cstdlib>
 #include <random>
@@ -21,7 +21,7 @@
 #include <tuple>
 #include <direct.h>
 
-static const double PADDING = 0.2;
+
 using set = std::unordered_set<std::pair<double, double>>;
 
 template <>
@@ -43,6 +43,7 @@ class MainWindow : public QMainWindow
 private:
 	double x0;
 	double y0;
+    double precision;
 
 public:
 	MainWindow(std::unique_ptr<QWidget> parent = Q_NULLPTR);
