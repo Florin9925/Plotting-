@@ -506,6 +506,9 @@ void MainWindow::SelectButtonStep2()
 
             std::vector<std::thread> threadsSecond;
 
+            if(start == 0)
+                start = 1;
+
             for (int index = start; index <= n; ++index)
             {
                 threadsSecond.push_back(std::thread(generate, fileName + "f" + std::to_string(index) + ".txt", std::ref(K0), index));
