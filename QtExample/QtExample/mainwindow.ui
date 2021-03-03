@@ -860,37 +860,6 @@ border-color: rgb(181, 204, 214);</string>
       <string>p =</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButtonMakeGraphStep2">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>210</y>
-       <width>121</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Century Gothic</family>
-       <pointsize>10</pointsize>
-       <weight>50</weight>
-       <italic>false</italic>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">border-radius: 10px;;
-font: 10pt  &quot;Century Gothic&quot;;
-color:#19232D;
-background:#148dfa;</string>
-     </property>
-     <property name="text">
-      <string>Make graph</string>
-     </property>
-    </widget>
    </widget>
    <widget class="QLabel" name="labelWaitMakePoint">
     <property name="geometry">

@@ -70,7 +70,6 @@ public:
     QLabel *labelN;
     QLineEdit *lineEditP;
     QLabel *labelP;
-    QPushButton *pushButtonMakeGraphStep2;
     QLabel *labelWaitMakePoint;
     QLabel *labelWaitPlotting;
     QLabel *labelWait;
@@ -375,15 +374,6 @@ public:
         labelP->setObjectName(QString::fromUtf8("labelP"));
         labelP->setGeometry(QRect(60, 160, 41, 31));
         labelP->setFont(font1);
-        pushButtonMakeGraphStep2 = new QPushButton(groupBoxStep2);
-        pushButtonMakeGraphStep2->setObjectName(QString::fromUtf8("pushButtonMakeGraphStep2"));
-        pushButtonMakeGraphStep2->setGeometry(QRect(80, 210, 121, 41));
-        pushButtonMakeGraphStep2->setFont(font2);
-        pushButtonMakeGraphStep2->setCursor(QCursor(Qt::PointingHandCursor));
-        pushButtonMakeGraphStep2->setStyleSheet(QString::fromUtf8("border-radius: 10px;;\n"
-"font: 10pt  \"Century Gothic\";\n"
-"color:#19232D;\n"
-"background:#148dfa;"));
         labelWaitMakePoint = new QLabel(centralWidget);
         labelWaitMakePoint->setObjectName(QString::fromUtf8("labelWaitMakePoint"));
         labelWaitMakePoint->setGeometry(QRect(630, 830, 301, 31));
@@ -495,7 +485,6 @@ public:
         labelN->setText(QApplication::translate("MainWindowClass", "n =", nullptr));
         lineEditP->setText(QApplication::translate("MainWindowClass", "5", nullptr));
         labelP->setText(QApplication::translate("MainWindowClass", "p =", nullptr));
-        pushButtonMakeGraphStep2->setText(QApplication::translate("MainWindowClass", "Make graph", nullptr));
 #ifndef QT_NO_TOOLTIP
         labelWaitMakePoint->setToolTip(QString());
 #endif // QT_NO_TOOLTIP

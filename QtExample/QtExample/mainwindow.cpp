@@ -28,6 +28,13 @@ ui(new Ui::MainWindowClass)
 	connect(ui->pushButtonMakeGraphStep2, &QPushButton::clicked, this, &MainWindow::MakeGraphStep2);
 	connect(ui->pushButtonReadXML, &QPushButton::clicked, this, &MainWindow::ReadXML);
 	connect(ui->actionExit, &QAction::triggered, this, &MainWindow::ActionExit);
+    connect(ui->actionHelp, &QAction::triggered, this, &MainWindow::ActionHelp);
+    std::ofstream f1(Data::Defaults::PATH_STEP1+"Hello.txt");
+    f1.close();
+    std::ofstream f2(Data::Defaults::PATH_STEP2+"Hello.txt");
+    f2.close();
+
+    help->setStyleSheet("QWidget{ background-color: #19232D;border: 0px solid #32414B;padding: 0px;color: #F0F0F0;selection - background - color: #1464A0;selection - color: #F0F0F0;}");
 }
 
 std::string MainWindow::replaceConstant(const std::string& input, const std::string& token, const std::string& token_value)
@@ -41,7 +48,6 @@ std::string MainWindow::replaceConstant(const std::string& input, const std::str
 
 		start = ecuation.find(token);
 	}
-
 	return ecuation;
 }
 
@@ -128,6 +134,8 @@ QCPGraphData MainWindow::generate2DPoints(CMathParser& mathParser, std::string& 
 
 void MainWindow::plotting(int numberFile)
 {
+    ui->potWidget->clearGraphs();
+    ui->potWidget->clearItems();
 	ui->potWidget->legend->clearItems();
 	ui->potWidget->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom)); // period as decimal separator and comma as thousand separator
 	ui->potWidget->legend->setVisible(true);
@@ -159,7 +167,7 @@ void MainWindow::plotting(int numberFile)
 
 	for (int index = 1; index <= numberFile; ++index)
 	{
-		readFile("..//.//QtExample\\Step1\\file" + std::to_string(index) + ".txt");
+		readFile(Data::Defaults::PATH_STEP1 + "file" + std::to_string(index) + ".txt");
 	}
 
 	QVector<double> xVector;
@@ -205,12 +213,16 @@ void MainWindow::plottingStep2(const int& n, const int& p)
 	colors.push_back(Qt::green);
 	colors.push_back(Qt::black);
 
-	ui->potWidget->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));
+    ui->potWidget->clearGraphs();
+    ui->potWidget->clearItems();
+    ui->potWidget->legend->clearItems();
+    ui->potWidget->setLocale(QLocale(QLocale::English, QLocale::UnitedKingdom)); // period as decimal separator and comma as thousand separator
+    ui->potWidget->legend->setVisible(true);
 
 	QVector<double> xVectorK0;
 	QVector<double> yVectorK0;
 
-	for (std::ifstream in("..//.//QtExample\\Step2\\K0\\f1.txt"); !in.eof();)
+	for (std::ifstream in(Data::Defaults::PATH_STEP2 + "K0\\f1.txt"); !in.eof();)
 	{
 		std::string line;
 		std::getline(in, line);
@@ -239,7 +251,7 @@ void MainWindow::plottingStep2(const int& n, const int& p)
 		set K;
 		for (int indexFile = 1; indexFile <= n; ++indexFile)
 		{
-			for (std::ifstream in("..//.//QtExample\\Step2\\K" + std::to_string(indexDir) + "\\f" + std::to_string(indexFile) + ".txt"); !in.eof();)
+			for (std::ifstream in(Data::Defaults::PATH_STEP2 + "K" + std::to_string(indexDir) + "\\f" + std::to_string(indexFile) + ".txt"); !in.eof();)
 			{
 				std::string line;
 				std::getline(in, line);
@@ -353,261 +365,271 @@ void MainWindow::facing()
 
 void MainWindow::SelectButtonStep1()
 {
-	ui->labelWait->setText("");
-	ui->labelWaitMakePoint->setText("");
-	ui->labelWaitPlotting->setText("");
-	stopwatch time;
-	time.tick();
-	precision = pow(10, ui->spinBoxPrecision->value()) * 1.0;
-	if (CheckData()) {
-		stopwatch timeMakePoint;
-		timeMakePoint.tick();
-
-		int numberPoint = std::stoi(ui->lineEditInitialPoints->text().toStdString());
-		int numberThread;
-		if (std::thread::hardware_concurrency() > 0) numberThread = std::thread::hardware_concurrency();
-		else numberThread = 4;
-		CMathParser parser;
-
-		std::random_device rd;
-		std::mt19937 gen(rd());
-		std::uniform_real_distribution<> disDouble(0.0, 1.0);
-		QCPGraphData result;
-
-		x0 = disDouble(gen);
-		y0 = disDouble(gen);
-
-		//Generez toti xn,yn
-		generateKthTerms(parser);
-
-		std::string fX(ui->lineEditFx->text().toStdString()), fY(ui->lineEditFy->text().toStdString());
-
-		replaceFunction(fX);
-		replaceFunction(fY);
-
-		auto generate = [&](int start, int stop, std::string fileName) {
-			std::ofstream out(fileName);
-			for (int i = start; i < stop; ++i) // data for graphs 2, 3 and 4
-			{
-				QCPGraphData temp = generate2DPoints(parser, fX, fY, x0, y0);
-				out << temp.key << " " << temp.value << "\n";
-				x0 = temp.key;
-				y0 = temp.value;
-			}
-			out.close();
-		};
-
-		std::vector<std::thread> threads;
-
-		auto spawnThreads = [&]()
-		{
-			for (int i = 1; i < numberThread; i++) {
-				threads.push_back(std::thread(generate, 0, numberPoint / numberThread, "..//.//QtExample\\Step1\\file" + std::to_string(i) + ".txt"));
-			}
-			threads.push_back(std::thread(generate, 0, numberPoint - numberPoint / numberThread * (numberThread - 1), "..//.//QtExample\\Step1\\file" + std::to_string(numberThread) + ".txt"));
-			for (auto& th : threads) {
-				th.join();
-			}
-		};
-
-		spawnThreads();
-		timeMakePoint.tock();
-		std::string convertor = std::to_string(timeMakePoint.report_ms() / 1000.0);
-		convertor = convertor.substr(0, convertor.size() - 3);
-
-		ui->labelWaitMakePoint->setText(std::move(QString::fromStdString("Time for make points: " + convertor + " seconds")));
-
-		stopwatch timePlottingPoints;
-		timePlottingPoints.tick();
-
-		plotting(numberThread);
-
-		timePlottingPoints.tock();
-		convertor = std::to_string(timePlottingPoints.report_ms() / 1000.0);
-		convertor = convertor.substr(0, convertor.size() - 3);
-
-		ui->labelWaitPlotting->setText(std::move(QString::fromStdString("Time for plotting points: " + convertor + " seconds")));
-	}
-	else
+    if (!CleanDir(Data::Defaults::PATH_STEP1))
 	{
 		error->setWindowTitle("Error");
-		error->setText(QString::fromStdString("Insert function!"));
+		error->setText(QString::fromStdString(Data::Errors::ANOTHER_ERROR));
 		error->show();
 		return;
 	}
+	else 
+	{
+		ui->labelWait->setText("");
+		ui->labelWaitMakePoint->setText("");
+		ui->labelWaitPlotting->setText("");
+		stopwatch time;
+		time.tick();
+		precision = pow(10, ui->spinBoxPrecision->value()) * 1.0;
+		if (CheckData()) {
+			stopwatch timeMakePoint;
+			timeMakePoint.tick();
 
-	time.tock();
+			int numberPoint = std::stoi(ui->lineEditInitialPoints->text().toStdString());
+			int numberThread;
+			if (std::thread::hardware_concurrency() > 0) numberThread = std::thread::hardware_concurrency();
+			else numberThread = 4;
+			CMathParser parser;
 
-	std::string convertor = std::to_string(time.report_ms() / 1000.0);
-	convertor = convertor.substr(0, convertor.size() - 3);
-	ui->labelWait->setText(std::move(QString::fromStdString("Total time: " + convertor + " seconds")));
+			std::random_device rd;
+			std::mt19937 gen(rd());
+			std::uniform_real_distribution<> disDouble(0.0, 1.0);
+			QCPGraphData result;
+
+			x0 = disDouble(gen);
+			y0 = disDouble(gen);
+
+			//Generez toti xn,yn
+			generateKthTerms(parser);
+
+			std::string fX(ui->lineEditFx->text().toStdString()), fY(ui->lineEditFy->text().toStdString());
+
+			replaceFunction(fX);
+			replaceFunction(fY);
+
+			auto generate = [&](int start, int stop, std::string fileName) {
+				std::ofstream out(fileName);
+				for (int i = start; i < stop; ++i) // data for graphs 2, 3 and 4
+				{
+					QCPGraphData temp = generate2DPoints(parser, fX, fY, x0, y0);
+					out << temp.key << " " << temp.value << "\n";
+					x0 = temp.key;
+					y0 = temp.value;
+				}
+				out.close();
+			};
+
+
+
+			auto spawnThreads = [&]()
+			{
+				std::vector<std::thread> threads;
+				for (int i = 1; i < numberThread; i++) {
+					threads.push_back(std::thread(generate, 0, numberPoint / numberThread, Data::Defaults::PATH_STEP1 + "file" + std::to_string(i) + ".txt"));
+				}
+				threads.push_back(std::thread(generate, 0, numberPoint - numberPoint / numberThread * (numberThread - 1), Data::Defaults::PATH_STEP1 + "file" + std::to_string(numberThread) + ".txt"));
+				for (auto& th : threads) {
+					th.join();
+				}
+			};
+
+
+			spawnThreads();
+			timeMakePoint.tock();
+			std::string convertor = std::to_string(timeMakePoint.report_ms() / 1000.0);
+			convertor = convertor.substr(0, convertor.size() - 3);
+
+			ui->labelWaitMakePoint->setText(std::move(QString::fromStdString("Time for make points: " + convertor + " seconds")));
+
+			stopwatch timePlottingPoints;
+			timePlottingPoints.tick();
+
+			plotting(numberThread);
+
+			timePlottingPoints.tock();
+			convertor = std::to_string(timePlottingPoints.report_ms() / 1000.0);
+			convertor = convertor.substr(0, convertor.size() - 3);
+
+			ui->labelWaitPlotting->setText(std::move(QString::fromStdString("Time for plotting points: " + convertor + " seconds")));
+		}
+		else
+		{
+			error->setWindowTitle("Error");
+			error->setText(QString::fromStdString(Data::Errors::NO_FUNCTION));
+			error->show();
+			return;
+		}
+
+		time.tock();
+
+		std::string convertor = std::to_string(time.report_ms() / 1000.0);
+		convertor = convertor.substr(0, convertor.size() - 3);
+		ui->labelWait->setText(std::move(QString::fromStdString("Total time: " + convertor + " seconds")));
+	}
 }
 
 void MainWindow::SelectButtonStep2()
 {
-	ui->labelWait->setText("");
-	ui->labelWaitMakePoint->setText("");
-	ui->labelWaitPlotting->setText("");
-	precision = pow(10, ui->spinBoxPrecision->value()) * 1.0;
-	stopwatch time;
-	time.tick();
-
-	if (CheckData())
-	{
-		stopwatch timeMakePoint;
-		timeMakePoint.tick();
-		int numberPointsK = std::stoi(ui->lineEditK->text().toStdString());
-		set K;
-		GenerateKPoints(K, numberPointsK);
-		int p = std::stoi(ui->lineEditP->text().toStdString());
-		int n = std::stoi(ui->lineEditN->text().toStdString());
-		for (int index = 0; index <= p; ++index)
-		{
-			std::string nameDir = "..//.//QtExample\\Step2\\K" + std::to_string(index);
-			_mkdir(nameDir.c_str());
-		}
-		CMathParser parser;
-		generateKthTerms(parser);
-		std::string fX(ui->lineEditFx->text().toStdString()), fY(ui->lineEditFy->text().toStdString());
-
-		replaceFunction(fX);
-		replaceFunction(fY);
-
-		auto generate = [&](std::string fileName, set K0, int index)
-		{
-			std::ofstream out(fileName);
-			for (auto& point : K0)
-			{
-				QCPGraphData temp = generate2DPoints(parser, fX, fY, point.first, point.second, index);
-				out << temp.key << " " << temp.value << "\n";
-			}
-		};
-
-		int numberThread;
-		if (std::thread::hardware_concurrency() > 0) numberThread = std::thread::hardware_concurrency();
-		else numberThread = 4;
-
-		auto spawnThreads = [&](std::string fileName, set K0)
-		{
-            int start =0;
-			for (int i = 1; i <= n - numberThread; i = i + numberThread)
-			{
-				std::vector<std::thread> threads;
-				for (int index = 0; index < numberThread; ++index)
-				{
-                    threads.push_back(std::thread(generate, fileName + "f" + std::to_string(i + index) + ".txt", std::ref(K0), i+index));
-                    ++start;
-				}
-				for (auto& th : threads) {
-					th.join();
-				}
-
-			}
-
-            std::vector<std::thread> threadsSecond;
-
-            if(start == 0)
-                start = 1;
-
-            for (int index = start; index <= n; ++index)
-            {
-                threadsSecond.push_back(std::thread(generate, fileName + "f" + std::to_string(index) + ".txt", std::ref(K0), index));
-            }
-            for (auto& th : threadsSecond) {
-                th.join();
-            }
-
-		};
-
-
-		auto read = [&K, &n](std::string fileName)
-		{
-			set newK;
-
-			for (int index = 1; index <= n; ++index)
-			{
-				for (std::ifstream in(fileName + "f" + std::to_string(index) + ".txt"); !in.eof();)
-				{
-					std::string line;
-					std::getline(in, line);
-					if (std::regex_match(line, std::regex(R"([+-]?(\d*.\d*) [+-]?(\d*.\d*))")))
-					{
-						std::stringstream ss(line);
-						std::string item;
-						std::getline(ss, item, ' ');
-
-						double x = std::stod(item);
-						std::getline(ss, item, ' ');
-						double y = std::stod(item);
-						newK.insert({ x,y });
-					}
-				}
-			}
-
-			K = newK;
-		};
-
-		std::ofstream out("..//.//QtExample\\Step2\\K0\\f1.txt");
-		for (auto& point : K)
-		{
-			out << point.first << " " << point.second << "\n";
-		}
-		out.close();
-
-		for (int index = 1; index <= p; ++index)
-		{
-			spawnThreads("..//.//QtExample\\Step2\\K" + std::to_string(index) + "\\", K);
-			if (index < p)
-				read("..//.//QtExample\\Step2\\K" + std::to_string(index) + "\\");
-		}
-		timeMakePoint.tock();
-		std::string convertor = std::to_string(timeMakePoint.report_ms() / 1000.0);
-		convertor = convertor.substr(0, convertor.size() - 3);
-
-		ui->labelWaitMakePoint->setText(std::move(QString::fromStdString("Time for make points: " + convertor + " seconds")));
-
-
-		stopwatch timePlottingPoints;
-		timePlottingPoints.tick();
-
-		plottingStep2(std::stoi(ui->lineEditN->text().toStdString()), std::stoi(ui->lineEditP->text().toStdString()));
-
-		timePlottingPoints.tock();
-		convertor = std::to_string(timePlottingPoints.report_ms() / 1000.0);
-		convertor = convertor.substr(0, convertor.size() - 3);
-
-		ui->labelWaitPlotting->setText(std::move(QString::fromStdString("Time for plotting points: " + convertor + " seconds")));
-
-	}
-	else
+    if (!CleanDir(Data::Defaults::PATH_STEP2))
 	{
 		error->setWindowTitle("Error");
-		error->setText(QString::fromStdString("Insert function!"));
+		error->setText(QString::fromStdString(Data::Errors::ANOTHER_ERROR));
 		error->show();
 		return;
 	}
-	time.tock();
+	else 
+	{
+		ui->labelWait->setText("");
+		ui->labelWaitMakePoint->setText("");
+		ui->labelWaitPlotting->setText("");
+		precision = pow(10, ui->spinBoxPrecision->value()) * 1.0;
+		stopwatch time;
+		time.tick();
 
-	std::string convertor = std::to_string(time.report_ms() / 1000.0);
-	convertor = convertor.substr(0, convertor.size() - 3);
-	ui->labelWait->setText(std::move(QString::fromStdString("Total time: " + convertor + " seconds")));
+		if (CheckData())
+		{
+			stopwatch timeMakePoint;
+			timeMakePoint.tick();
+			int numberPointsK = std::stoi(ui->lineEditK->text().toStdString());
+			set K;
+			GenerateKPoints(K, numberPointsK);
+			int p = std::stoi(ui->lineEditP->text().toStdString());
+			int n = std::stoi(ui->lineEditN->text().toStdString());
+
+			// for (const auto& entry : std::filesystem::directory_iterator("dir_path"))
+			  //       std::filesystem::remove_all(entry.path());
+
+			for (int index = 0; index <= p; ++index)
+			{
+				std::string nameDir = Data::Defaults::PATH_STEP2 + "K" + std::to_string(index);
+				_mkdir(nameDir.c_str());
+			}
+			CMathParser parser;
+			generateKthTerms(parser);
+			std::string fX(ui->lineEditFx->text().toStdString()), fY(ui->lineEditFy->text().toStdString());
+
+			replaceFunction(fX);
+			replaceFunction(fY);
+
+			auto generate = [&](std::string fileName, set K0, int index)
+			{
+				std::ofstream out(fileName);
+				for (auto& point : K0)
+				{
+					QCPGraphData temp = generate2DPoints(parser, fX, fY, point.first, point.second, index);
+					out << temp.key << " " << temp.value << "\n";
+				}
+			};
+
+			int numberThread;
+			if (std::thread::hardware_concurrency() > 0) numberThread = std::thread::hardware_concurrency();
+			else numberThread = 4;
+
+			auto spawnThreads = [&](std::string fileName, set K0)
+			{
+				int start = 0;
+				for (int i = 1; i <= n - numberThread; i = i + numberThread)
+				{
+					std::vector<std::thread> threads;
+					for (int index = 0; index < numberThread; ++index)
+					{
+						threads.push_back(std::thread(generate, fileName + "f" + std::to_string(i + index) + ".txt", std::ref(K0), i + index));
+						++start;
+					}
+					for (auto& th : threads) {
+						th.join();
+					}
+
+				}
+
+				if (start == 0)
+					start = 1;
+				std::vector<std::thread> threadsSecond;
+
+				for (int index = start; index <= n; ++index)
+				{
+					threadsSecond.push_back(std::thread(generate, fileName + "f" + std::to_string(index) + ".txt", std::ref(K0), index));
+				}
+				for (auto& th : threadsSecond) {
+					th.join();
+				}
+
+			};
+
+
+			auto read = [&K, &n](std::string fileName)
+			{
+				set newK;
+
+				for (int index = 1; index <= n; ++index)
+				{
+					for (std::ifstream in(fileName + "f" + std::to_string(index) + ".txt"); !in.eof();)
+					{
+						std::string line;
+						std::getline(in, line);
+						if (std::regex_match(line, std::regex(R"([+-]?(\d*.\d*) [+-]?(\d*.\d*))")))
+						{
+							std::stringstream ss(line);
+							std::string item;
+							std::getline(ss, item, ' ');
+
+							double x = std::stod(item);
+							std::getline(ss, item, ' ');
+							double y = std::stod(item);
+							newK.insert({ x,y });
+						}
+					}
+				}
+
+				K = newK;
+			};
+
+			std::ofstream out(Data::Defaults::PATH_STEP2 + "K0\\f1.txt");
+			for (auto& point : K)
+			{
+				out << point.first << " " << point.second << "\n";
+			}
+			out.close();
+
+			for (int index = 1; index <= p; ++index)
+			{
+				spawnThreads(Data::Defaults::PATH_STEP2 + "K" + std::to_string(index) + "\\", K);
+				if (index < p)
+					read(Data::Defaults::PATH_STEP2 + "K" + std::to_string(index) + "\\");
+			}
+			timeMakePoint.tock();
+			std::string convertor = std::to_string(timeMakePoint.report_ms() / 1000.0);
+			convertor = convertor.substr(0, convertor.size() - 3);
+
+			ui->labelWaitMakePoint->setText(std::move(QString::fromStdString("Time for make points: " + convertor + " seconds")));
+
+
+			stopwatch timePlottingPoints;
+			timePlottingPoints.tick();
+
+			plottingStep2(std::stoi(ui->lineEditN->text().toStdString()), std::stoi(ui->lineEditP->text().toStdString()));
+
+			timePlottingPoints.tock();
+			convertor = std::to_string(timePlottingPoints.report_ms() / 1000.0);
+			convertor = convertor.substr(0, convertor.size() - 3);
+
+			ui->labelWaitPlotting->setText(std::move(QString::fromStdString("Time for plotting points: " + convertor + " seconds")));
+
+		}
+		else
+		{
+			error->setWindowTitle("Error");
+			error->setText(QString::fromStdString("Insert function!"));
+			error->show();
+			return;
+		}
+		time.tock();
+
+		std::string convertor = std::to_string(time.report_ms() / 1000.0);
+		convertor = convertor.substr(0, convertor.size() - 3);
+		ui->labelWait->setText(std::move(QString::fromStdString("Total time: " + convertor + " seconds")));
+	}
 }
 
-void MainWindow::MakeGraphStep2()
-{
-	ui->labelWait->setText("");
-	ui->labelWaitMakePoint->setText("");
-	ui->labelWaitPlotting->setText("");
-	stopwatch time;
-	time.tick();
-
-	plottingStep2(std::stoi(ui->lineEditN->text().toStdString()), std::stoi(ui->lineEditP->text().toStdString()));
-	time.tock();
-
-	std::string convertor = std::to_string(time.report_ms() / 1000.0);
-	convertor = convertor.substr(0, convertor.size() - 3);
-	ui->labelWaitPlotting->setText(std::move(QString::fromStdString("Time for plotting points: " + convertor + " seconds")));
-}
 
 void MainWindow::AddPointsButton()
 {
@@ -639,9 +661,9 @@ void MainWindow::AddPointsButton()
 	auto spawnThreads = [&]()
 	{
 		for (int i = 1; i < numberThread; i++) {
-			threads.push_back(std::thread(generate, 0, numberPoint / numberThread, "..//.//QtExample\\Step1\\file" + std::to_string(i) + ".txt"));
+			threads.push_back(std::thread(generate, 0, numberPoint / numberThread, Data::Defaults::PATH_STEP1 + "file" + std::to_string(i) + ".txt"));
 		}
-		threads.push_back(std::thread(generate, 0, numberPoint - numberPoint / numberThread * (numberThread - 1), "..//.//QtExample\\Step1\\file" + std::to_string(numberThread) + ".txt"));
+		threads.push_back(std::thread(generate, 0, numberPoint - numberPoint / numberThread * (numberThread - 1), Data::Defaults::PATH_STEP1 + "file" + std::to_string(numberThread) + ".txt"));
 		for (auto& th : threads) {
 			th.join();
 		}
@@ -656,14 +678,36 @@ void MainWindow::ActionExit()
 	exit(1);
 }
 
+void MainWindow::ActionHelp()
+{
+    QLabel* label = new QLabel(tr("Name:"));
+
+        QHBoxLayout* layout = new QHBoxLayout();
+
+        QString textLayout(QString::fromStdString(Data::Info::GENERAL_HELP));
+        label->setText(textLayout);
+
+        Qt::Alignment alignment;
+        alignment.setFlag(Qt::AlignmentFlag::AlignCenter);
+        layout->setAlignment(alignment);
+
+        help->setMinimumWidth(800);
+        help->setMinimumHeight(600);
+
+        layout->addWidget(label);
+        help->setLayout(layout);
+
+        help->show();
+}
+
 void MainWindow::DefaultStep1()
 {
-	ReadQDomNode("..//.//QtExample\\Default\\default.xml", "step1");
+	ReadQDomNode((Data::Defaults::PATH_DEFAULT + "default.xml").c_str(), "step1");
 }
 
 void MainWindow::DefaultStep2()
 {
-	ReadQDomNode("..//.//QtExample\\Default\\default.xml", "step2");
+	ReadQDomNode((Data::Defaults::PATH_DEFAULT + "default.xml").c_str(), "step2");
 }
 
 void MainWindow::ReadQDomNode(const QString& fileName, const QString& elementTagName)
@@ -760,6 +804,17 @@ bool MainWindow::CheckData()
 		return false;
 
 	return true;
+}
+
+bool MainWindow::CleanDir(const std::string& path)
+{
+	bool check = false;
+	for (const auto& entry : std::filesystem::directory_iterator(path))
+	{
+		check = true;
+		std::filesystem::remove_all(entry.path());
+	}
+    return check;
 }
 
 MainWindow::~MainWindow()

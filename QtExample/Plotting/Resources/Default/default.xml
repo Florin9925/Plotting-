@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<default>
+	<step1>
+		<Xn>SQRT(n)/(1+SQRT(n))</Xn>
+		<Yn>SIN(n)/SQRT(1+n)</Yn>
+		<FnX>(((XN)-(XN-1))*X+b*(XN-1)-a*(XN))/(b-a)</FnX>
+		<FnY>((YN)-(YN-1)-(DN)*((M)-m))*X/(b-a)+(DN)*Y+(b*(YN-1)-a*(YN)-(DN)*(b*m-a*(M)))/(b-a)</FnY>
+		<a>0</a>
+		<b>1</b>
+		<m>0</m>
+		<M>0</M>
+		<dn>0.4</dn>
+	</step1>
+	<step2>
+		<Xn>(3*n+1)/(n+1)</Xn>
+		<Yn>SIN(n)/(SQRT(n)+1)+2</Yn>
+		<FnX>(((XN)-(XN-1))*X+b*(XN-1)-a*(XN))/(b-a)</FnX>
+		<FnY>(((YN)-(YN-1))/(b-a) -(1/(b-a))*((M)/(1+n*(M))-(m)/(1+n*m)))*X+(Y)/(1+n*Y)+(YN-1)-a*((YN)-(YN-1))/(b-a)+(a*(M))/((b-a)*(1+n*(M)))-b*m/((b-a)*1+n*m)</FnY>
+		<a>1</a>
+		<b>3</b>
+		<m>2</m>
+		<M>2</M>
+	</step2>	
+ </default>

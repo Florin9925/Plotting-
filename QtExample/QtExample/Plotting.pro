@@ -3,7 +3,7 @@ QT		 += xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
-CONFIG += c++11
+CONFIG += c++17
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -11,6 +11,7 @@ CONFIG += c++11
 
 SOURCES += \
     CMathParser.cpp \
+    data.cpp \
     main.cpp \
     mainwindow.cpp \
     qcustomplot.cpp \
@@ -18,6 +19,7 @@ SOURCES += \
 
 HEADERS += \
     CMathParser.h \
+    data.h \
     mainwindow.h \
     qcustomplot.h \
     stopwatch.h

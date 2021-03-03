@@ -20,7 +20,8 @@
 #include <unordered_set>
 #include <tuple>
 #include <direct.h>
-
+#include <filesystem>
+#include "data.h"
 
 using set = std::unordered_set<std::pair<double, double>>;
 
@@ -54,12 +55,12 @@ private slots:
 	void SelectButtonStep1();
 	void SelectButtonStep2();
 	void AddPointsButton();
-    void MakeGraphStep2();
 	void DefaultStep1();
 	void DefaultStep2();
 	void Clean();
 	void ReadXML();
 	void ActionExit();
+    void ActionHelp();
 
 private:
 	std::array<double, 101> xK;
@@ -80,11 +81,12 @@ private:
 	bool CheckConstraintN();
     void ReadQDomNode(const QString& fileName, const QString& elementTagName);
     void GenerateKPoints(set& k, const int& numberPoints);
-
+    bool CleanDir(const std::string& path);
     bool CheckData();
 
 private:
 	const double DN = 0.4;
 	std::unique_ptr<Ui::MainWindowClass> ui = std::make_unique<Ui::MainWindowClass>();
     std::unique_ptr<QMessageBox> error = std::make_unique<QMessageBox>();
+    std::unique_ptr<QWidget> help = std::make_unique<QWidget>();
 };
