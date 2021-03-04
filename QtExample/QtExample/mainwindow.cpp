@@ -25,7 +25,6 @@ ui(new Ui::MainWindowClass)
 	connect(ui->pushButtonDefaultStep1, &QPushButton::released, this, &MainWindow::DefaultStep1);
 	connect(ui->pushButtonDefaultStep2, &QPushButton::released, this, &MainWindow::DefaultStep2);
 	connect(ui->pushButtonClean, &QPushButton::released, this, &MainWindow::Clean);
-	connect(ui->pushButtonMakeGraphStep2, &QPushButton::clicked, this, &MainWindow::MakeGraphStep2);
 	connect(ui->pushButtonReadXML, &QPushButton::clicked, this, &MainWindow::ReadXML);
 	connect(ui->actionExit, &QAction::triggered, this, &MainWindow::ActionExit);
     connect(ui->actionHelp, &QAction::triggered, this, &MainWindow::ActionHelp);
