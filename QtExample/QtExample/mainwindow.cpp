@@ -26,12 +26,10 @@ ui(new Ui::MainWindowClass)
 	connect(ui->pushButtonDefaultStep2, &QPushButton::released, this, &MainWindow::DefaultStep2);
 	connect(ui->pushButtonClean, &QPushButton::released, this, &MainWindow::Clean);
 	connect(ui->pushButtonReadXML, &QPushButton::clicked, this, &MainWindow::ReadXML);
+    connect(ui->pushButtonShowXGraph, &QPushButton::released, this, &MainWindow::ShowXGraph);
 	connect(ui->actionExit, &QAction::triggered, this, &MainWindow::ActionExit);
     connect(ui->actionHelp, &QAction::triggered, this, &MainWindow::ActionHelp);
-    std::ofstream f1(Data::Defaults::PATH_STEP1+"Hello.txt");
-    f1.close();
-    std::ofstream f2(Data::Defaults::PATH_STEP2+"Hello.txt");
-    f2.close();
+
 
     help->setStyleSheet("QWidget{ background-color: #19232D;border: 0px solid #32414B;padding: 0px;color: #F0F0F0;selection - background - color: #1464A0;selection - color: #F0F0F0;}");
 }
@@ -131,7 +129,7 @@ QCPGraphData MainWindow::generate2DPoints(CMathParser& mathParser, std::string& 
 	return generateFk(mathParser, k, x, y, fX, fY);
 }
 
-void MainWindow::plotting(int numberFile)
+void MainWindow::plotting(int numberFile, std::string filePath)
 {
     ui->potWidget->clearGraphs();
     ui->potWidget->clearItems();
@@ -166,7 +164,7 @@ void MainWindow::plotting(int numberFile)
 
 	for (int index = 1; index <= numberFile; ++index)
 	{
-		readFile(Data::Defaults::PATH_STEP1 + "file" + std::to_string(index) + ".txt");
+        readFile(filePath + "f" + std::to_string(index) + ".txt");
 	}
 
 	QVector<double> xVector;
@@ -364,6 +362,8 @@ void MainWindow::facing()
 
 void MainWindow::SelectButtonStep1()
 {
+    std::ofstream f1(Data::Defaults::PATH_STEP1+"Hello.txt");
+    f1.close();
     if (!CleanDir(Data::Defaults::PATH_STEP1))
 	{
 		error->setWindowTitle("Error");
@@ -423,9 +423,9 @@ void MainWindow::SelectButtonStep1()
 			{
 				std::vector<std::thread> threads;
 				for (int i = 1; i < numberThread; i++) {
-					threads.push_back(std::thread(generate, 0, numberPoint / numberThread, Data::Defaults::PATH_STEP1 + "file" + std::to_string(i) + ".txt"));
+                    threads.push_back(std::thread(generate, 0, numberPoint / numberThread, Data::Defaults::PATH_STEP1 + "f" + std::to_string(i) + ".txt"));
 				}
-				threads.push_back(std::thread(generate, 0, numberPoint - numberPoint / numberThread * (numberThread - 1), Data::Defaults::PATH_STEP1 + "file" + std::to_string(numberThread) + ".txt"));
+                threads.push_back(std::thread(generate, 0, numberPoint - numberPoint / numberThread * (numberThread - 1), Data::Defaults::PATH_STEP1 + "f" + std::to_string(numberThread) + ".txt"));
 				for (auto& th : threads) {
 					th.join();
 				}
@@ -468,6 +468,9 @@ void MainWindow::SelectButtonStep1()
 
 void MainWindow::SelectButtonStep2()
 {
+    std::ofstream f2(Data::Defaults::PATH_STEP2+"Hello.txt");
+    f2.close();
+
     if (!CleanDir(Data::Defaults::PATH_STEP2))
 	{
 		error->setWindowTitle("Error");
@@ -626,9 +629,21 @@ void MainWindow::SelectButtonStep2()
 		std::string convertor = std::to_string(time.report_ms() / 1000.0);
 		convertor = convertor.substr(0, convertor.size() - 3);
 		ui->labelWait->setText(std::move(QString::fromStdString("Total time: " + convertor + " seconds")));
+        ui->spinBoxShowXGraph->setEnabled(true);
+        ui->pushButtonShowXGraph->setEnabled(true);
+        ui->spinBoxShowXGraph->setMaximum(ui->lineEditP->text().toInt());
 	}
 }
 
+void MainWindow::ShowXGraph()
+{
+    if(ui->spinBoxShowXGraph->value()==0)
+    {
+        plotting(1, Data::Defaults::PATH_STEP2+"K0\\");
+    }
+    else
+        plotting(ui->lineEditN->text().toInt(),Data::Defaults::PATH_STEP2+"K" + std::to_string(ui->spinBoxShowXGraph->value())+"\\");
+}
 
 void MainWindow::AddPointsButton()
 {
@@ -780,6 +795,12 @@ void MainWindow::Clean()
 	ui->lineEditReadXML->setText("");
 	ui->labelWaitMakePoint->setText("");
 	ui->labelWaitPlotting->setText("");
+    ui->potWidget->clearGraphs();
+    ui->potWidget->clearItems();
+    ui->potWidget->legend->clearItems();
+    ui->spinBoxShowXGraph->setDisabled(true);
+    ui->pushButtonShowXGraph->setDisabled(true);
+
 }
 
 void MainWindow::ReadXML()

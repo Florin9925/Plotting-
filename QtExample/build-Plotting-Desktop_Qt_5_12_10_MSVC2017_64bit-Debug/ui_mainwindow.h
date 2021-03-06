@@ -70,6 +70,8 @@ public:
     QLabel *labelN;
     QLineEdit *lineEditP;
     QLabel *labelP;
+    QSpinBox *spinBoxShowXGraph;
+    QPushButton *pushButtonShowXGraph;
     QLabel *labelWaitMakePoint;
     QLabel *labelWaitPlotting;
     QLabel *labelWait;
@@ -374,6 +376,35 @@ public:
         labelP->setObjectName(QString::fromUtf8("labelP"));
         labelP->setGeometry(QRect(60, 160, 41, 31));
         labelP->setFont(font1);
+        spinBoxShowXGraph = new QSpinBox(groupBoxStep2);
+        spinBoxShowXGraph->setObjectName(QString::fromUtf8("spinBoxShowXGraph"));
+        spinBoxShowXGraph->setEnabled(false);
+        spinBoxShowXGraph->setGeometry(QRect(40, 220, 71, 31));
+        spinBoxShowXGraph->setFont(font2);
+        spinBoxShowXGraph->setCursor(QCursor(Qt::PointingHandCursor));
+        spinBoxShowXGraph->setStyleSheet(QString::fromUtf8("QSpinBox { \n"
+"background-color: #148dfa;\n"
+"font:10pt \"Century Gothic\";\n"
+"color:	#19232D;\n"
+"}"));
+        spinBoxShowXGraph->setAlignment(Qt::AlignCenter);
+        spinBoxShowXGraph->setButtonSymbols(QAbstractSpinBox::UpDownArrows);
+        spinBoxShowXGraph->setMinimum(1);
+        spinBoxShowXGraph->setMaximum(9);
+        spinBoxShowXGraph->setSingleStep(1);
+        spinBoxShowXGraph->setValue(1);
+        pushButtonShowXGraph = new QPushButton(groupBoxStep2);
+        pushButtonShowXGraph->setObjectName(QString::fromUtf8("pushButtonShowXGraph"));
+        pushButtonShowXGraph->setEnabled(false);
+        pushButtonShowXGraph->setGeometry(QRect(140, 210, 121, 41));
+        pushButtonShowXGraph->setFont(font2);
+        pushButtonShowXGraph->setCursor(QCursor(Qt::PointingHandCursor));
+        pushButtonShowXGraph->setStyleSheet(QString::fromUtf8("border-radius: 10px;;\n"
+"font: 10pt  \"Century Gothic\";\n"
+"color:#19232D;\n"
+"background:#148dfa;"));
+        pushButtonShowXGraph->setCheckable(false);
+        pushButtonShowXGraph->setFlat(false);
         labelWaitMakePoint = new QLabel(centralWidget);
         labelWaitMakePoint->setObjectName(QString::fromUtf8("labelWaitMakePoint"));
         labelWaitMakePoint->setGeometry(QRect(630, 830, 301, 31));
@@ -485,6 +516,12 @@ public:
         labelN->setText(QApplication::translate("MainWindowClass", "n =", nullptr));
         lineEditP->setText(QApplication::translate("MainWindowClass", "5", nullptr));
         labelP->setText(QApplication::translate("MainWindowClass", "p =", nullptr));
+#ifndef QT_NO_TOOLTIP
+        spinBoxShowXGraph->setToolTip(QString());
+#endif // QT_NO_TOOLTIP
+        spinBoxShowXGraph->setSuffix(QString());
+        spinBoxShowXGraph->setPrefix(QString());
+        pushButtonShowXGraph->setText(QApplication::translate("MainWindowClass", "Show graph", nullptr));
 #ifndef QT_NO_TOOLTIP
         labelWaitMakePoint->setToolTip(QString());
 #endif // QT_NO_TOOLTIP
