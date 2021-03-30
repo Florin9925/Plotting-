@@ -63,7 +63,8 @@ OBJECTS       = release\CMathParser.obj \
 		release\moc_mainwindow.obj \
 		release\moc_qcustomplot.obj
 
-DIST          = Information.txt ..\QtExample\CMathParser.h \
+DIST          = Default/default.xml \
+		Information.txt ..\QtExample\CMathParser.h \
 		..\QtExample\data.h \
 		..\QtExample\mainwindow.h \
 		..\QtExample\qcustomplot.h \
