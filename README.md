@@ -1,1 +1,1 @@
-# QtApplication
+# PlottingQt
