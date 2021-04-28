@@ -1,0 +1,28 @@
+.heading3{
+    text-align: center;
+    font-weight: bold;
+}
+
+.heading4{
+    text-align:center;
+    overflow-wrap: normal;
+}
+
+.formula{
+    color: white;
+    margin:20px;
+    background-color: #0b1826;
+    fill-opacity: 40%;
+    padding: 10px;
+    border-radius: 5px;
+    font-style: italic;
+    -moz-box-shadow:    inset 0 0 10px #000000;
+    -webkit-box-shadow: inset 0 0 10px #000000;
+    box-shadow:         inset 0 0 10px #000000;
+}
+
+.graphImage{
+    margin: 20px;
+    width: 90%;
+    max-width: 100%;
+}
