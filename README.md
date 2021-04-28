@@ -1,4 +1,5 @@
 <link rel="stylesheet" type="text/css" media="all" href="Style/style.css" />
+
 # Plotting with C++
 <h3 class="heading3">Abstract</h3>
 <h4 class="heading4">In today’s society, the tech industry is mostly dependent on a visual basis. The purpose of data visualisation applications(for students) could be reduced to 2 main objectives:
