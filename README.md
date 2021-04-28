@@ -16,11 +16,11 @@ Using C++(one of the fastest and most memory efficient languages) and Qt(a C++ c
 
 ## Technology used
 
-* Qt and QCustomPlot.
+* Qt<sup>[[1]](https://www.qt.io/)</sup> and QCustomPlot.
 
 * CmathParser.
 
-One of the main problems encountered during development was using user-input functions, that is why we prioritised adding a fairly robust mathematics parsing engine written in C++/C. We found CmathParser<sup>[[1]](https://github.com/NTDLS/CMathParser)</sup> and we liked how it satisfies our app’s needs on the user interaction side.
+One of the main problems encountered during development was using user-input functions, that is why we prioritised adding a fairly robust mathematics parsing engine written in C++/C. We found CmathParser<sup>[[2]](https://github.com/NTDLS/CMathParser)</sup> and we liked how it satisfies our app’s needs on the user interaction side.
 
 Although it is fairly light  weight, CMathParser can interpret a various list of mathematical functions and operations and its performance is convenient in relation to the advantages that this engine brings. 
 Because of this parser, the mathematical functions used need to follow a specific syntax(for example, √x is SQRT(x)). This is why we found it useful to read our functions from a file. We opted for reading from an XML(Extended Markup Language) file because we can use the tags in our advantage and clearly define every function and every parameter for that function.
@@ -43,7 +43,7 @@ This is an example for a XML file accepted by the app:
 </function>
 ```
 
-QCustomPlot<sup>[[2]](https://www.qcustomplot.com/)</sup> is a Qt C++ widget for plotting and data visualization. It has no further dependencies and is well documented. This plotting library focuses on making good looking, publication quality 2D plots, graphs and charts, as well as offering high performance for real time data visualization applications.
+QCustomPlot<sup>[[3]](https://www.qcustomplot.com/)</sup> is a Qt C++ widget for plotting and data visualization. It has no further dependencies and is well documented. This plotting library focuses on making good looking, publication quality 2D plots, graphs and charts, as well as offering high performance for real time data visualization applications.
 
 
 
