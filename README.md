@@ -78,8 +78,9 @@ auto spawnThreads = [&]()
     }
 };
 ```
-
-<img class="graphImage" src="graphPhoto.png">
+<p align="center">
+<img class="graphImage" src="graphPhoto.png" width=500 heigth=300>
+</p>
 
 ## Limitations
 
