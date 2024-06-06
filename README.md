@@ -129,4 +129,4 @@ In conclusion, this app is a useful tool for plotting functions made in C++.  It
 
 [Ionuț-Alin Dinu](https://github.com/Dinu-Alin) | 
 [Adrian Călăvie](https://github.com/adriancalavie) |
-[Florin Arhip](https://github.com/Florin9925)
+[Florin Arhip](https://github.com/FlorinArhip)
